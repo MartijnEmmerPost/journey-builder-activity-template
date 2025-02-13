@@ -10,15 +10,16 @@ define([
     var payload = {};
     $(window).ready(onRender);
 
+    // Event triggers
     connection.on('initActivity', initialize);
     connection.on('requestedTokens', onGetTokens);
     connection.on('requestedEndpoints', onGetEndpoints);
     connection.on('requestedInteraction', onRequestedInteraction);
     connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
     connection.on('requestedDataSources', onRequestedDataSources);
+    connection.on('clickedNext', save);  // The 'Done' button handler
 
-    connection.on('clickedNext', save);
-   
+    // Render method that is called when the window is ready
     function onRender() {
         connection.trigger('ready');
         connection.trigger('requestTokens');
@@ -28,27 +29,33 @@ define([
         connection.trigger('requestDataSources');  
     }
 
-    function onRequestedDataSources(dataSources){
+    // Handling data sources request
+    function onRequestedDataSources(dataSources) {
         console.log('*** requestedDataSources ***');
         console.log(dataSources);
     }
 
-    function onRequestedInteraction (interaction) {    
+    // Handling interaction request
+    function onRequestedInteraction(interaction) {    
         console.log('*** requestedInteraction ***');
         console.log(interaction);
-     }
+    }
 
-     function onRequestedTriggerEventDefinition(eventDefinitionModel) {
+    // Handling event definition request
+    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
         console.log('*** requestedTriggerEventDefinition ***');
         console.log(eventDefinitionModel);
     }
 
+    // Initialize method that runs when the activity is first initialized
     function initialize(data) {
-        console.log(data);
+        console.log('Initializing with data:', data);
+        
         if (data) {
             payload = data;
         }
 
+        // Check if inArguments exists in the payload
         var hasInArguments = Boolean(
             payload['arguments'] &&
             payload['arguments'].execute &&
@@ -58,12 +65,11 @@ define([
 
         var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
 
-        console.log(inArguments);
-
-        // Laden van de start en eindtijden
+        // Load startTime and endTime if available in inArguments
         $('#start-time').val(inArguments.startTime || '');
         $('#end-time').val(inArguments.endTime || '');
 
+        // Update the button to say "done"
         connection.trigger('updateButton', {
             button: 'next',
             text: 'done',
@@ -71,29 +77,36 @@ define([
         });
     }
 
+    // Tokens requested
     function onGetTokens(tokens) {
-        console.log(tokens);
+        console.log('Received tokens:', tokens);
         authTokens = tokens;
     }
 
+    // Handling endpoints request
     function onGetEndpoints(endpoints) {
-        console.log(endpoints);
+        console.log('Received endpoints:', endpoints);
     }
 
+    // Save the times when 'Done' is clicked
     function save() {
-        // Haal de tijden op van de velden
+        // Get the start and end times from the input fields
         var startTime = $('#start-time').val();
         var endTime = $('#end-time').val();
 
-        // Zet de tijden in de payload
+        // Ensure that inArguments is populated with the correct times
         payload['arguments'].execute.inArguments = [{
             "startTime": startTime,
             "endTime": endTime
         }];
-
+        
+        // Indicate that the activity is configured
         payload['metaData'].isConfigured = true;
 
-        console.log(payload);
+        // Log the payload for debugging
+        console.log('Payload to be saved:', payload);
+
+        // Trigger the updateActivity event to save the data
         connection.trigger('updateActivity', payload);
     }
 });
