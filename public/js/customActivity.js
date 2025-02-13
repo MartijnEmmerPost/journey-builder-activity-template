@@ -10,52 +10,50 @@ define([
     var payload = {};
     $(window).ready(onRender);
 
-    // Event triggers
+    // Events voor de activiteit
     connection.on('initActivity', initialize);
     connection.on('requestedTokens', onGetTokens);
     connection.on('requestedEndpoints', onGetEndpoints);
     connection.on('requestedInteraction', onRequestedInteraction);
     connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
     connection.on('requestedDataSources', onRequestedDataSources);
-    connection.on('clickedNext', save);  // The 'Done' button handler
 
-    // Render method that is called when the window is ready
+    connection.on('clickedNext', save);
+
+    // Bij renderen van de activiteit
     function onRender() {
+        // JB zal reageren wanneer 'ready' wordt aangeroepen met 'initActivity'
         connection.trigger('ready');
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
         connection.trigger('requestInteraction');
         connection.trigger('requestTriggerEventDefinition');
-        connection.trigger('requestDataSources');  
+        connection.trigger('requestDataSources');
     }
 
-    // Handling data sources request
     function onRequestedDataSources(dataSources) {
         console.log('*** requestedDataSources ***');
         console.log(dataSources);
     }
 
-    // Handling interaction request
     function onRequestedInteraction(interaction) {    
         console.log('*** requestedInteraction ***');
         console.log(interaction);
     }
 
-    // Handling event definition request
     function onRequestedTriggerEventDefinition(eventDefinitionModel) {
         console.log('*** requestedTriggerEventDefinition ***');
         console.log(eventDefinitionModel);
     }
 
-    // Initialize method that runs when the activity is first initialized
+    // Initialisatie van de activiteit
     function initialize(data) {
-        console.log('Initializing with data:', data);
-        
+        console.log("Initializing data: " + JSON.stringify(data));
         if (data) {
             payload = data;
         }
 
-        // Check if inArguments exists in the payload
+        // Check of 'inArguments' bestaat en haal ze op
         var hasInArguments = Boolean(
             payload['arguments'] &&
             payload['arguments'].execute &&
@@ -65,11 +63,21 @@ define([
 
         var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
 
-        // Load startTime and endTime if available in inArguments
-        $('#start-time').val(inArguments.startTime || '');
-        $('#end-time').val(inArguments.endTime || '');
+        console.log('Has In arguments: ' + JSON.stringify(inArguments));
 
-        // Update the button to say "done"
+        // Vul de tijden als ze zijn ingesteld
+        $.each(inArguments, function (index, inArgument) {
+            $.each(inArgument, function (key, val) {
+                if (key === 'startTime') {
+                    $('#start-time').val(val);
+                }
+                if (key === 'endTime') {
+                    $('#end-time').val(val);
+                }
+            });
+        });
+
+        // Update de knop van 'Next' naar 'Done'
         connection.trigger('updateButton', {
             button: 'next',
             text: 'done',
@@ -77,36 +85,38 @@ define([
         });
     }
 
-    // Tokens requested
+    // Verkrijg de tokens (authenticatie)
     function onGetTokens(tokens) {
-        console.log('Received tokens:', tokens);
+        console.log("Tokens received: " + JSON.stringify(tokens));
         authTokens = tokens;
     }
 
-    // Handling endpoints request
+    // Verkrijg de endpoints
     function onGetEndpoints(endpoints) {
-        console.log('Received endpoints:', endpoints);
+        console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
-    // Save the times when 'Done' is clicked
+    // Sla de gegevens op wanneer op de knop 'done' wordt geklikt
     function save() {
-        // Get the start and end times from the input fields
+        // Haal de tijden op uit de invoervelden
         var startTime = $('#start-time').val();
         var endTime = $('#end-time').val();
 
-        // Ensure that inArguments is populated with the correct times
+        console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
+        console.log('End time: ' + endTime);
+
+        // Sla de tijden op in de inArguments van de payload
         payload['arguments'].execute.inArguments = [{
             "startTime": startTime,
             "endTime": endTime
         }];
-        
-        // Indicate that the activity is configured
+
+        // Markeer de activiteit als geconfigureerd
         payload['metaData'].isConfigured = true;
 
-        // Log the payload for debugging
-        console.log('Payload to be saved:', payload);
+        console.log("Payload on SAVE function: " + JSON.stringify(payload));
 
-        // Trigger the updateActivity event to save the data
+        // Update de activiteit
         connection.trigger('updateActivity', payload);
     }
 });
