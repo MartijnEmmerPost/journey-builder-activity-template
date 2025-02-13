@@ -1,6 +1,6 @@
 {
     "workflowApiVersion": "1.1",
-     "applicationExtensionKey": "a15e6abe-f1b2-434b-bd82-4e5ca247ead4",
+    
     "metaData": {
         "icon": "images/icon.png",
         "iconSmall": "images/iconSmall.png",
@@ -31,6 +31,7 @@
         }
     },
     "configurationArguments": {
+         "applicationExtensionKey": "a15e6abe-f1b2-434b-bd82-4e5ca247ead4",
       "save": {
         "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/save",
           "verb": "POST",
