@@ -16,7 +16,10 @@
     },
     "arguments": {
         "execute": {
-           "inArguments":[],
+           "inArguments":[{
+                    "startTime": "startTime",
+                    "endTime": "endTime"
+                }],
           "outArguments": [],
           "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
            "verb": "POST",
@@ -62,7 +65,7 @@
     "schema": {
         "arguments": {
             "execute": {
-                "inArguments": [],
+                "inArguments": [{ "startTime": "startTime", "endTime": "endTime" }],
                 "outArguments": []
             }
         }
