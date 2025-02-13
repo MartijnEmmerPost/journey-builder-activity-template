@@ -19,12 +19,10 @@ define([
 
     connection.on('clickedNext', save);
    
-    // Render functie wanneer de pagina klaar is
     function onRender() {
         // JB will respond the first time 'ready' is called with 'initActivity'
         connection.trigger('ready');
 
-        // Verzoek om benodigde gegevens zoals tokens, endpoints, interaction, enz.
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
         connection.trigger('requestInteraction');
@@ -47,7 +45,6 @@ define([
         console.log(eventDefinitionModel);
     }
 
-    // Initialisatie van de activiteit, wanneer de gegevens geladen worden
     function initialize(data) {
         console.log('Initializing activity:', data);
         if (data) {
@@ -63,7 +60,7 @@ define([
 
         var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
 
-        // Start- en eindtijden invullen als ze bestaan
+        // Controleer of we al start- en eindtijden hebben opgeslagen in inArguments
         $('#start-time').val(inArguments.startTime || '');
         $('#end-time').val(inArguments.endTime || '');
 
@@ -74,24 +71,21 @@ define([
         });
     }
 
-    // Functie om de tokens op te halen
     function onGetTokens(tokens) {
         console.log('Tokens ontvangen:', tokens);
         authTokens = tokens;
     }
 
-    // Functie om de endpoints op te halen
     function onGetEndpoints(endpoints) {
         console.log('Endpoints ontvangen:', endpoints);
     }
 
-    // Functie om de gegevens op te slaan wanneer "Next" is geklikt
+    // Opslaan van de tijden bij klikken op "Done"
     function save() {
-        // Verkrijg de waarden voor starttijd en eindtijd
         var startTime = $('#start-time').val();
         var endTime = $('#end-time').val();
 
-        // Vul de inArguments met de juiste waarden
+        // Voeg start- en eindtijden toe aan de inArguments
         payload['arguments'].execute.inArguments = [{
             "tokens": authTokens,
             "startTime": startTime,
