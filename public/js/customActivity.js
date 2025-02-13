@@ -27,21 +27,6 @@ define([
         connection.trigger('requestDataSources');
     }
 
-    function onRequestedDataSources(dataSources) {
-        console.log('*** requestedDataSources ***');
-        console.log(dataSources);
-    }
-
-    function onRequestedInteraction(interaction) {
-        console.log('*** requestedInteraction ***');
-        console.log(interaction);
-    }
-
-    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
-        console.log('*** requestedTriggerEventDefinition ***');
-        console.log(eventDefinitionModel);
-    }
-
     function initialize(data) {
         console.log('🔄 Activity data ontvangen:', data);
         if (data) {
@@ -65,23 +50,14 @@ define([
 
         connection.trigger('updateButton', {
             button: 'next',
-            text: 'Done',
+            text: 'done',
             visible: true
         });
     }
 
-    function onGetTokens(tokens) {
-        console.log('🔑 Tokens ontvangen:', tokens);
-        authTokens = tokens;
-    }
-
-    function onGetEndpoints(endpoints) {
-        console.log('🌐 Endpoints ontvangen:', endpoints);
-    }
-
     function save() {
         console.log('💾 Opslaan van activiteit...');
-        
+
         var startTime = $('#start-time').val();
         var endTime = $('#end-time').val();
 
@@ -90,7 +66,7 @@ define([
             "startTime": startTime,
             "endTime": endTime
         }];
-        
+
         payload['metaData'].isConfigured = true;
 
         console.log('📤 Payload versturen:', payload);
