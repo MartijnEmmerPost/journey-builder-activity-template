@@ -20,9 +20,7 @@ define([
     connection.on('clickedNext', save);
    
     function onRender() {
-        // JB will respond the first time 'ready' is called with 'initActivity'
         connection.trigger('ready');
-
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
         connection.trigger('requestInteraction');
@@ -30,27 +28,27 @@ define([
         connection.trigger('requestDataSources');  
     }
 
-    function onRequestedDataSources(dataSources) {
+    function onRequestedDataSources(dataSources){
         console.log('*** requestedDataSources ***');
         console.log(dataSources);
     }
 
-    function onRequestedInteraction(interaction) {    
+    function onRequestedInteraction (interaction) {    
         console.log('*** requestedInteraction ***');
         console.log(interaction);
-    }
+     }
 
-    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
+     function onRequestedTriggerEventDefinition(eventDefinitionModel) {
         console.log('*** requestedTriggerEventDefinition ***');
         console.log(eventDefinitionModel);
     }
 
     function initialize(data) {
-        console.log('Initializing activity:', data);
+        console.log(data);
         if (data) {
             payload = data;
         }
-        
+
         var hasInArguments = Boolean(
             payload['arguments'] &&
             payload['arguments'].execute &&
@@ -60,7 +58,9 @@ define([
 
         var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
 
-        // Controleer of we al start- en eindtijden hebben opgeslagen in inArguments
+        console.log(inArguments);
+
+        // Laden van de start en eindtijden
         $('#start-time').val(inArguments.startTime || '');
         $('#end-time').val(inArguments.endTime || '');
 
@@ -72,33 +72,28 @@ define([
     }
 
     function onGetTokens(tokens) {
-        console.log('Tokens ontvangen:', tokens);
+        console.log(tokens);
         authTokens = tokens;
     }
 
     function onGetEndpoints(endpoints) {
-        console.log('Endpoints ontvangen:', endpoints);
+        console.log(endpoints);
     }
 
-    // Opslaan van de tijden bij klikken op "Done"
     function save() {
+        // Haal de tijden op van de velden
         var startTime = $('#start-time').val();
         var endTime = $('#end-time').val();
 
-        // Voeg start- en eindtijden toe aan de inArguments
+        // Zet de tijden in de payload
         payload['arguments'].execute.inArguments = [{
-            "tokens": authTokens,
             "startTime": startTime,
             "endTime": endTime
         }];
-        
-        // Markeer de activiteit als geconfigureerd
+
         payload['metaData'].isConfigured = true;
 
-        // Log het hele payload object om te zien of alles correct wordt doorgegeven
-        console.log('Saving activity:', payload);
-
-        // Update de activiteit in Journey Builder
+        console.log(payload);
         connection.trigger('updateActivity', payload);
     }
 });
