@@ -9,8 +9,8 @@
     "type": "REST",
     "lang": {
         "en-US": {
-            "name": "Template",
-          "description": "A Template for a custom Journey Builder activity",
+            "name": "Hold between hours",
+          "description": "Restrict between the specified hours.",
           "step1Label": "Configure Activity"
         }
     },
