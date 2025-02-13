@@ -16,42 +16,38 @@ define([
     connection.on('requestedInteraction', onRequestedInteraction);
     connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
     connection.on('requestedDataSources', onRequestedDataSources);
-
     connection.on('clickedNext', save);
-   
-    function onRender() {
-        // JB will respond the first time 'ready' is called with 'initActivity'
-        connection.trigger('ready');
 
+    function onRender() {
+        connection.trigger('ready');
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
         connection.trigger('requestInteraction');
         connection.trigger('requestTriggerEventDefinition');
-        connection.trigger('requestDataSources');  
-
+        connection.trigger('requestDataSources');
     }
 
-    function onRequestedDataSources(dataSources){
+    function onRequestedDataSources(dataSources) {
         console.log('*** requestedDataSources ***');
         console.log(dataSources);
     }
 
-    function onRequestedInteraction (interaction) {    
+    function onRequestedInteraction(interaction) {
         console.log('*** requestedInteraction ***');
         console.log(interaction);
-     }
+    }
 
-     function onRequestedTriggerEventDefinition(eventDefinitionModel) {
+    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
         console.log('*** requestedTriggerEventDefinition ***');
         console.log(eventDefinitionModel);
     }
 
     function initialize(data) {
-        console.log(data);
+        console.log('🔄 Activity data ontvangen:', data);
         if (data) {
             payload = data;
         }
-        
+
         var hasInArguments = Boolean(
             payload['arguments'] &&
             payload['arguments'].execute &&
@@ -59,46 +55,45 @@ define([
             payload['arguments'].execute.inArguments.length > 0
         );
 
-        var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
+        var inArguments = hasInArguments ? payload['arguments'].execute.inArguments[0] : {};
 
-        console.log(inArguments);
+        console.log('📥 InArguments:', inArguments);
 
-        $.each(inArguments, function (index, inArgument) {
-            $.each(inArgument, function (key, val) {
-                
-              
-            });
-        });
+        // Haal start- en eindtijd op als deze al zijn opgeslagen
+        $('#start-time').val(inArguments.startTime || '');
+        $('#end-time').val(inArguments.endTime || '');
 
         connection.trigger('updateButton', {
             button: 'next',
-            text: 'done',
+            text: 'Done',
             visible: true
         });
     }
 
     function onGetTokens(tokens) {
-        console.log(tokens);
+        console.log('🔑 Tokens ontvangen:', tokens);
         authTokens = tokens;
     }
 
     function onGetEndpoints(endpoints) {
-        console.log(endpoints);
+        console.log('🌐 Endpoints ontvangen:', endpoints);
     }
 
     function save() {
-        var postcardURLValue = $('#postcard-url').val();
-        var postcardTextValue = $('#postcard-text').val();
+        console.log('💾 Opslaan van activiteit...');
+        
+        var startTime = $('#start-time').val();
+        var endTime = $('#end-time').val();
 
         payload['arguments'].execute.inArguments = [{
-            "tokens": authTokens
+            "tokens": authTokens,
+            "startTime": startTime,
+            "endTime": endTime
         }];
         
         payload['metaData'].isConfigured = true;
 
-        console.log(payload);
+        console.log('📤 Payload versturen:', payload);
         connection.trigger('updateActivity', payload);
     }
-
-
 });
