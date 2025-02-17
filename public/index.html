@@ -23,26 +23,47 @@
             require(config, dependencies);
         })();
     </script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #f3f2f2;
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+        .slds-input {
+            font-size: 1.2rem;
+            padding: 10px;
+        }
+        .slds-form-element {
+            margin-bottom: 16px;
+        }
+    </style>
 </head>
 
 <body>
-  <div id="step1" class="step">
-        <div class="slds-grid">
-
-            <main class="slds-col slds-size--1-of-3 slds-p-horizontal--small">
-              <h1>Enter the desired hold times</h1>
-<label for="start-time">Start Time:</label>
-<input type="time" id="start-time" placeholder="Enter Start Time">
-  
-<label for="end-time">End Time:</label>
-<input type="time" id="end-time" placeholder="Enter End Time">
-
-            </main>
-           
+    <div id="step1" class="step slds-grid slds-grid_vertical-align-center slds-grid_align-center">
+        <div class="slds-col container">
+            <h1 class="slds-text-heading_medium">Enter the Desired Hold Times</h1>
             
-
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="start-time">Start Time:</label>
+                <div class="slds-form-element__control">
+                    <input type="time" id="start-time" class="slds-input" placeholder="Enter Start Time">
+                </div>
+            </div>
+            
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="end-time">End Time:</label>
+                <div class="slds-form-element__control">
+                    <input type="time" id="end-time" class="slds-input" placeholder="Enter End Time">
+                </div>
+            </div>
         </div>
-
     </div>
 </body>
 
