@@ -4,8 +4,6 @@ var util = require('util');
 // Deps
 const Path = require('path');
 const JWT = require(Path.join(__dirname, '..', 'lib', 'jwtDecoder.js'));
-var util = require('util');
-var http = require('https');
 
 exports.logExecuteData = [];
 
@@ -29,31 +27,13 @@ function logData(req) {
         secure: req.secure,
         originalUrl: req.originalUrl
     });
-    console.log("body: " + util.inspect(req.body));
-    console.log("headers: " + req.headers);
-    console.log("trailers: " + req.trailers);
-    console.log("method: " + req.method);
-    console.log("url: " + req.url);
-    console.log("params: " + util.inspect(req.params));
-    console.log("query: " + util.inspect(req.query));
-    console.log("route: " + req.route);
-    console.log("cookies: " + req.cookies);
-    console.log("ip: " + req.ip);
-    console.log("path: " + req.path);
-    console.log("host: " + req.host);
-    console.log("fresh: " + req.fresh);
-    console.log("stale: " + req.stale);
-    console.log("protocol: " + req.protocol);
-    console.log("secure: " + req.secure);
-    console.log("originalUrl: " + req.originalUrl);
+    console.log("Received Request:", util.inspect(req.body, { depth: null }));
 }
 
 /*
- * POST Handler for / route of Activity (this is the edit route).
+ * POST Handler for /edit/ route of Activity.
  */
 exports.edit = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
     logData(req);
     res.send(200, 'Edit');
 };
@@ -62,47 +42,63 @@ exports.edit = function (req, res) {
  * POST Handler for /save/ route of Activity.
  */
 exports.save = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
     logData(req);
     res.send(200, 'Save');
 };
 
 /*
  * POST Handler for /execute/ route of Activity.
+ * Hier controleren we of de huidige tijd binnen de ingestelde tijden ligt.
  */
 exports.execute = function (req, res) {
 
-    // example on how to decode JWT
     JWT(req.body, process.env.jwtSecret, (err, decoded) => {
 
-        // verification error -> unauthorized request
+        // Verificatie mislukt -> Unauthorized
         if (err) {
-            console.error(err);
+            console.error("JWT Decode Error:", err);
             return res.status(401).end();
         }
 
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            
-            // decoded in arguments
-            var decodedArgs = decoded.inArguments[0];
-            
+            // Haal de inArguments op
+            var inArguments = decoded.inArguments[0];
+
             logData(req);
-            res.send(200, 'Execute');
+
+            let startTime = inArguments.startTime; // Formaat: "HH:mm"
+            let endTime = inArguments.endTime; // Formaat: "HH:mm"
+
+            if (!startTime || !endTime) {
+                console.error("Start- en eindtijd niet opgegeven.");
+                return res.status(400).json({ error: "Start- en eindtijd niet opgegeven." });
+            }
+
+            // Huidige tijd ophalen en vergelijken
+            let currentTime = new Date();
+            let start = new Date(currentTime.toDateString() + ' ' + startTime);
+            let end = new Date(currentTime.toDateString() + ' ' + endTime);
+
+            console.log(`Start Time: ${start}, End Time: ${end}, Current Time: ${currentTime}`);
+
+            if (currentTime >= start && currentTime <= end) {
+                console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
+                res.status(200).json({ status: "success", message: "Record verwerkt binnen ingestelde tijd." });
+            } else {
+                console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
+                res.status(200).json({ status: "held", message: "Record wordt vastgehouden tot het ingestelde tijdsvenster." });
+            }
         } else {
-            console.error('inArguments invalid.');
-            return res.status(400).end();
+            console.error("inArguments ontbreekt of is ongeldig.");
+            return res.status(400).json({ error: "inArguments ontbreekt of is ongeldig." });
         }
     });
 };
-
 
 /*
  * POST Handler for /publish/ route of Activity.
  */
 exports.publish = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
     logData(req);
     res.send(200, 'Publish');
 };
@@ -111,8 +107,6 @@ exports.publish = function (req, res) {
  * POST Handler for /validate/ route of Activity.
  */
 exports.validate = function (req, res) {
-    // Data from the req and put it in an array accessible to the main app.
-    //console.log( req.body );
     logData(req);
     res.send(200, 'Validate');
 };
