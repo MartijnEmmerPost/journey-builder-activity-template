@@ -114,22 +114,20 @@ function save() {
     var [startHours, startMinutes] = startTime.split(":").map(Number);
     var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-    // Zet de tijden om naar UTC voor de vergelijking
+    // Zet de tijden om naar minuten voor de vergelijking
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
     // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        // Als de huidige tijd binnen het ingestelde bereik ligt, wordt het record vastgehouden
+        // Als de huidige tijd tussen start- en eindtijd valt, wordt het record vastgehouden
         console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
-        // Stel outArguments in om record vast te houden
         payload['arguments'].execute.outArguments = [{
             "recordStatus": "held"  // Markeer het record als 'held' (vastgehouden)
         }];
     } else {
         // Als de huidige tijd buiten het ingestelde bereik valt, wordt het record verder verwerkt
         console.log("✅ Tijd is buiten het ingestelde bereik. Record wordt verwerkt.");
-        // Stel outArguments in om record door te laten gaan
         payload['arguments'].execute.outArguments = [{
             "recordStatus": "processed"  // Markeer het record als 'processed' (door laten gaan)
         }];
