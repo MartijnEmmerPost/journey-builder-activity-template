@@ -104,6 +104,9 @@ define([
 
         console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
         console.log('End time: ' + endTime);
+        console.log("StartTime type:", typeof startTime);
+        console.log("EndTime type:", typeof endTime);
+
 
         // Sla de tijden op in de inArguments van de payload
         payload['arguments'].execute.inArguments = [{
