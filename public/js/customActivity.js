@@ -96,53 +96,57 @@ define([
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
-    // Sla de gegevens op wanneer op de knop 'done' wordt geklikt
-    function save() {
-        // Haal de tijden op uit de invoervelden
-        var startTime = $('#start-time').val();
-        var endTime = $('#end-time').val();
+ // Sla de gegevens op wanneer op de knop 'done' wordt geklikt
+function save() {
+    // Haal de tijden op uit de invoervelden
+    var startTime = $('#start-time').val();
+    var endTime = $('#end-time').val();
 
-        console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
-        console.log('End time: ' + endTime);
-        console.log("StartTime type:", typeof startTime);
-        console.log("EndTime type:", typeof endTime);
+    console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
+    console.log('End time: ' + endTime);
+    console.log("StartTime type:", typeof startTime);
+    console.log("EndTime type:", typeof endTime);
 
-        // ** Tijd verwerken naar een correct formaat voor de vergelijking **
-        let currentTime = new Date();
-        let currentHours = currentTime.getHours();
-        let currentMinutes = currentTime.getMinutes();
+    // ** Tijd verwerken naar een correct formaat voor de vergelijking **
+    let currentTime = new Date();
+    let currentHours = currentTime.getHours();
+    let currentMinutes = currentTime.getMinutes();
 
-        // Zorg ervoor dat de tijdswaarden altijd twee cijfers hebben voor de minuten
-        let [startHours, startMinutes] = startTime.split(":").map(Number);
-        let [endHours, endMinutes] = endTime.split(":").map(Number);
+    // Zorg ervoor dat de tijdswaarden altijd twee cijfers hebben voor de minuten
+    let [startHours, startMinutes] = startTime.split(":").map(Number);
+    let [endHours, endMinutes] = endTime.split(":").map(Number);
 
-        startMinutes = startMinutes < 10 ? '0' + startMinutes : startMinutes;
-        endMinutes = endMinutes < 10 ? '0' + endMinutes : endMinutes;
+    startMinutes = startMinutes < 10 ? '0' + startMinutes : startMinutes;
+    endMinutes = endMinutes < 10 ? '0' + endMinutes : endMinutes;
 
-        let currentTotalMinutes = currentHours * 60 + currentMinutes;
-        let startTotalMinutes = startHours * 60 + startMinutes;
-        let endTotalMinutes = endHours * 60 + endMinutes;
+    // Converteer de tijden naar het aantal minuten sinds middernacht voor vergelijking
+    let currentTotalMinutes = currentHours * 60 + currentMinutes;
+    let startTotalMinutes = startHours * 60 + startMinutes;
+    let endTotalMinutes = endHours * 60 + endMinutes;
 
-        console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
+    console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
+    console.log(`Tijd in minuten - Start: ${startTotalMinutes}, End: ${endTotalMinutes}, Current: ${currentTotalMinutes}`);
 
-        if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-            console.log("✅ Tijd is binnen het ingestelde bereik.");
-        } else {
-            console.log("❌ Tijd is NIET binnen het ingestelde bereik.");
-        }
-
-        // Sla de tijden op in de inArguments van de payload
-        payload['arguments'].execute.inArguments = [{
-            "startTime": startTime,
-            "endTime": endTime
-        }];
-
-        // Markeer de activiteit als geconfigureerd
-        payload['metaData'].isConfigured = true;
-
-        console.log("Payload on SAVE function: " + JSON.stringify(payload));
-
-        // Update de activiteit
-        connection.trigger('updateActivity', payload);
+    // Vergelijk of de huidige tijd binnen het bereik valt
+    if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+        console.log("✅ Tijd is binnen het ingestelde bereik.");
+    } else {
+        console.log("❌ Tijd is NIET binnen het ingestelde bereik.");
     }
+
+    // Sla de tijden op in de inArguments van de payload
+    payload['arguments'].execute.inArguments = [{
+        "startTime": startTime,
+        "endTime": endTime
+    }];
+
+    // Markeer de activiteit als geconfigureerd
+    payload['metaData'].isConfigured = true;
+
+    console.log("Payload on SAVE function: " + JSON.stringify(payload));
+
+    // Update de activiteit
+    connection.trigger('updateActivity', payload);
+}
+
 });
