@@ -96,7 +96,6 @@ define([
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
-// Sla de gegevens op wanneer op de knop 'done' wordt geklikt
 function save() {
     // Haal de tijden op uit de invoervelden
     var startTime = $('#start-time').val();
@@ -107,32 +106,27 @@ function save() {
     console.log("StartTime type:", typeof startTime);
     console.log("EndTime type:", typeof endTime);
 
-    // ** Tijd verwerken naar een correct formaat voor de vergelijking **
-    let currentTime = new Date();
-    let currentHours = currentTime.getHours();
-    let currentMinutes = currentTime.getMinutes();
+    // Converteer starttijd en eindtijd naar minuten
+    var startTimeParts = startTime.split(":");
+    var startTotalMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
 
-    // Zorg ervoor dat de tijdswaarden correct gesplitst en geconverteerd worden naar getallen
-    let [startHours, startMinutes] = startTime.split(":").map(Number);
-    let [endHours, endMinutes] = endTime.split(":").map(Number);
+    var endTimeParts = endTime.split(":");
+    var endTotalMinutes = parseInt(endTimeParts[0]) * 60 + parseInt(endTimeParts[1]);
 
-    // Debug log om de gesplitste waarden te controleren
-    console.log(`Start time split: Hours = ${startHours}, Minutes = ${startMinutes}`);
-    console.log(`End time split: Hours = ${endHours}, Minutes = ${endMinutes}`);
+    // Huidige tijd in minuten
+    var currentTime = new Date();
+    var currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
-    // Converteer de tijden naar het aantal minuten sinds middernacht voor vergelijking
-    let currentTotalMinutes = currentHours * 60 + currentMinutes;
-    let startTotalMinutes = startHours * 60 + startMinutes;
-    let endTotalMinutes = endHours * 60 + endMinutes;
+    // Debug logs voor de tijden
+    console.log(`Start tijd in minuten: ${startTotalMinutes}`);
+    console.log(`Eind tijd in minuten: ${endTotalMinutes}`);
+    console.log(`Huidige tijd in minuten: ${currentTotalMinutes}`);
 
-    console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
-    console.log(`Tijd in minuten - Start: ${startTotalMinutes}, End: ${endTotalMinutes}, Current: ${currentTotalMinutes}`);
-
-    // Vergelijk of de huidige tijd binnen het bereik valt
+    // Vergelijking van de tijden
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        console.log("✅ Tijd is binnen het ingestelde bereik.");
+        console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
     } else {
-        console.log("❌ Tijd is NIET binnen het ingestelde bereik.");
+        console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
     }
 
     // Sla de tijden op in de inArguments van de payload
@@ -149,6 +143,5 @@ function save() {
     // Update de activiteit
     connection.trigger('updateActivity', payload);
 }
-
 
 });
