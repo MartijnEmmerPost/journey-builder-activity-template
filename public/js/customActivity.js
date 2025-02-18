@@ -107,6 +107,25 @@ define([
         console.log("StartTime type:", typeof startTime);
         console.log("EndTime type:", typeof endTime);
 
+        // *** Hier voegen we de tijdsvergelijking toe ***
+        let currentTime = new Date();
+        let currentHours = currentTime.getHours();
+        let currentMinutes = currentTime.getMinutes();
+
+        let [startHours, startMinutes] = startTime.split(":").map(Number);
+        let [endHours, endMinutes] = endTime.split(":").map(Number);
+
+        let currentTotalMinutes = currentHours * 60 + currentMinutes;
+        let startTotalMinutes = startHours * 60 + startMinutes;
+        let endTotalMinutes = endHours * 60 + endMinutes;
+
+        console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
+
+        if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+            console.log("✅ Tijd is binnen het ingestelde bereik.");
+        } else {
+            console.log("❌ Tijd is NIET binnen het ingestelde bereik.");
+        }
 
         // Sla de tijden op in de inArguments van de payload
         payload['arguments'].execute.inArguments = [{
