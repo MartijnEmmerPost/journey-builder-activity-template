@@ -67,8 +67,8 @@
     "arguments": {
         "execute": {
             "inArguments": [
-                { "startTime": { "dataType": "Number", "isRequired": true } },
-                { "endTime": { "dataType": "Number", "isRequired": true } }
+                { "startTime": { "dataType": "date", "isRequired": true } },
+                { "endTime": { "dataType": "date", "isRequired": true } }
             ],
             "outArguments": []
         }
