@@ -114,11 +114,15 @@ function save() {
     var [startHours, startMinutes] = startTime.split(":").map(Number);
     var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-    // Zet de tijden om naar minuten voor de vergelijking
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
-    // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
+    // Als de eindtijd vóór de starttijd ligt (bijvoorbeeld 23:00 - 02:00), moet de eindtijd als 'de volgende dag' worden beschouwd
+    if (endTotalMinutes < startTotalMinutes) {
+        endTotalMinutes += 24 * 60;  // Voeg een dag toe aan de eindtijd
+    }
+
+    // Vergelijking van de tijden (controleer of de huidige tijd tussen start en eind ligt)
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
         // Als de huidige tijd tussen start- en eindtijd valt, wordt het record vastgehouden
         console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
