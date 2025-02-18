@@ -115,18 +115,15 @@ function save() {
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
-    // Controleer of de huidige tijd binnen het bereik van de start- en eindtijd ligt
+    // Controleer of de huidige tijd tussen de start- en eindtijd ligt
     var recordStatus = "";
 
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        // Als de tijd tussen de opgegeven tijden ligt, houdt het record vast
-        console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
-        recordStatus = "held";  // Record wordt vastgehouden
-        connection.trigger('recordHold', { message: "Record wordt vastgehouden, tijd is binnen het ingestelde bereik." });
+        console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
+        recordStatus = "processed"; // Record mag doorgaan
     } else {
-        // Als de tijd buiten het bereik ligt, wordt het record doorgestuurd
-        console.log("✅ Tijd is buiten het ingestelde bereik. Record wordt verwerkt.");
-        recordStatus = "processed";  // Record mag doorgaan
+        console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
+        recordStatus = "held"; // Record wordt vastgehouden
     }
 
     // Voeg de recordStatus toe aan outArguments
@@ -138,11 +135,12 @@ function save() {
     payload['metaData'].isConfigured = true;
     console.log("Payload met outArguments: " + JSON.stringify(payload));
 
-    // Update de activiteit, maar alleen als het record is verwerkt
-    if (recordStatus === "processed") {
-        connection.trigger('updateActivity', payload); // Update de activiteit als de tijd buiten bereik is
+    // **Belangrijk:** Als de tijd niet binnen bereik is, moet de activiteit stoppen of de record vasthouden.
+    if (recordStatus === "held") {
+        connection.trigger('recordHold', { message: "Record wordt vastgehouden, tijd is buiten het ingestelde bereik." });
+    } else {
+        connection.trigger('updateActivity', payload); // Update de activiteit als de tijd binnen bereik is
     }
 }
-
 
 });
