@@ -121,11 +121,11 @@ function save() {
         console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
     }
 
-    // Sla de tijden op in de inArguments van de payload
-    payload['arguments'].execute.inArguments = [{
-        "startTime": startTime.toISOString(),  // Sla de datum in ISO-formaat op
-        "endTime": endTime.toISOString()       // Sla de datum in ISO-formaat op
-    }];
+   // Sla de tijden op in de inArguments van de payload
+payload['arguments'].execute.inArguments = [{
+    "startTime": startTime,  // Bewaar de tijd als string (bijv. "HH:mm")
+    "endTime": endTime       // Bewaar de tijd als string (bijv. "HH:mm")
+}];
 
     // Markeer de activiteit als geconfigureerd
     payload['metaData'].isConfigured = true;
