@@ -98,35 +98,24 @@ define([
 
 function save() {
     // Haal de tijden op uit de invoervelden
-    var startTime = $('#start-time').val();
-    var endTime = $('#end-time').val();
+    var startTime = new Date($('#start-time').val());
+    var endTime = new Date($('#end-time').val());
 
     console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
     console.log('End time: ' + endTime);
     console.log("StartTime type:", typeof startTime);
     console.log("EndTime type:", typeof endTime);
 
-    // Functie om tijd om te zetten naar het aantal minuten sinds middernacht
-    function convertToMinutes(timeString) {
-        const [hours, minutes] = timeString.split(":").map(num => parseInt(num, 10));
-        return hours * 60 + minutes;  // Zet om naar minuten sinds middernacht
-    }
-
-    // Converteer starttijd en eindtijd naar minuten
-    var startTotalMinutes = convertToMinutes(startTime);
-    var endTotalMinutes = convertToMinutes(endTime);
-
-    // Huidige tijd in minuten
+    // Huidige tijd
     var currentTime = new Date();
-    var currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
     // Debug logs voor de tijden
-    console.log(`Start tijd in minuten: ${startTotalMinutes}`);
-    console.log(`Eind tijd in minuten: ${endTotalMinutes}`);
-    console.log(`Huidige tijd in minuten: ${currentTotalMinutes}`);
+    console.log(`Start tijd: ${startTime}`);
+    console.log(`Eind tijd: ${endTime}`);
+    console.log(`Huidige tijd: ${currentTime}`);
 
-    // Vergelijking van de tijden
-    if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+    // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
+    if (currentTime >= startTime && currentTime <= endTime) {
         console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
     } else {
         console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
@@ -134,8 +123,8 @@ function save() {
 
     // Sla de tijden op in de inArguments van de payload
     payload['arguments'].execute.inArguments = [{
-        "startTime": startTime,
-        "endTime": endTime
+        "startTime": startTime.toISOString(),  // Sla de datum in ISO-formaat op
+        "endTime": endTime.toISOString()       // Sla de datum in ISO-formaat op
     }];
 
     // Markeer de activiteit als geconfigureerd
@@ -146,5 +135,6 @@ function save() {
     // Update de activiteit
     connection.trigger('updateActivity', payload);
 }
+
 
 });
