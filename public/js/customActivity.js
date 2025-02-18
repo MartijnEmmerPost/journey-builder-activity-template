@@ -102,7 +102,7 @@ function save() {
 
     console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
     console.log('End time: ' + endTime);
-    
+
     // Huidige tijd (in UTC)
     var currentTime = new Date();
     var currentUTC = new Date(currentTime.toUTCString());  // Zet de huidige tijd naar UTC
@@ -114,12 +114,13 @@ function save() {
     var [startHours, startMinutes] = startTime.split(":").map(Number);
     var [endHours, endMinutes] = endTime.split(":").map(Number);
 
+    // Zet de tijden om naar UTC voor de vergelijking
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
     // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        // Als de huidige tijd tussen start en eind ligt, wordt het record vastgehouden
+        // Als de huidige tijd binnen het ingestelde bereik ligt, wordt het record vastgehouden
         console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
         // Stel outArguments in om record vast te houden
         payload['arguments'].execute.outArguments = [{
