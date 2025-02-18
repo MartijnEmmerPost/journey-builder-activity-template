@@ -20,9 +20,7 @@
                     "startTime": "startTime",
                     "endTime": "endTime"
                 }],
-                 "outArguments": [{
-            "recordStatus": "" 
-        }],
+                "outArguments": [],
           "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
            "verb": "POST",
             "body": "",
