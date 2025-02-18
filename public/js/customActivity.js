@@ -93,7 +93,7 @@ define([
     function onGetEndpoints(endpoints) {
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
-
+    
 function save() {
     // Haal de tijden op uit de invoervelden (als string)
     var startTime = $('#start-time').val(); // Tijd als string (bijv. "HH:mm")
@@ -129,9 +129,9 @@ function save() {
         recordStatus = "processed";  // Record mag doorgaan
     }
 
-    // Vul de outArguments in met de status van het record
+    // Voeg de recordStatus toe aan outArguments
     payload['arguments'].execute.outArguments = [{
-        "recordStatus": recordStatus  // Voeg de status toe aan de outArguments
+        "recordStatus": recordStatus
     }];
 
     // Markeer de activiteit als geconfigureerd
