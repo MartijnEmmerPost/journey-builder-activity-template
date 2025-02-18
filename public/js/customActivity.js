@@ -96,7 +96,7 @@ define([
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
- // Sla de gegevens op wanneer op de knop 'done' wordt geklikt
+// Sla de gegevens op wanneer op de knop 'done' wordt geklikt
 function save() {
     // Haal de tijden op uit de invoervelden
     var startTime = $('#start-time').val();
@@ -112,12 +112,13 @@ function save() {
     let currentHours = currentTime.getHours();
     let currentMinutes = currentTime.getMinutes();
 
-    // Zorg ervoor dat de tijdswaarden altijd twee cijfers hebben voor de minuten
+    // Zorg ervoor dat de tijdswaarden correct gesplitst en geconverteerd worden naar getallen
     let [startHours, startMinutes] = startTime.split(":").map(Number);
     let [endHours, endMinutes] = endTime.split(":").map(Number);
 
-    startMinutes = startMinutes < 10 ? '0' + startMinutes : startMinutes;
-    endMinutes = endMinutes < 10 ? '0' + endMinutes : endMinutes;
+    // Debug log om de gesplitste waarden te controleren
+    console.log(`Start time split: Hours = ${startHours}, Minutes = ${startMinutes}`);
+    console.log(`End time split: Hours = ${endHours}, Minutes = ${endMinutes}`);
 
     // Converteer de tijden naar het aantal minuten sinds middernacht voor vergelijking
     let currentTotalMinutes = currentHours * 60 + currentMinutes;
@@ -148,5 +149,6 @@ function save() {
     // Update de activiteit
     connection.trigger('updateActivity', payload);
 }
+
 
 });
