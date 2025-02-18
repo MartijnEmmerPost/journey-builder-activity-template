@@ -51,37 +51,41 @@ exports.save = function (req, res) {
  * Hier controleren we of de huidige tijd binnen de ingestelde tijden ligt.
  */
 exports.execute = function (req, res) {
-
     JWT(req.body, process.env.jwtSecret, (err, decoded) => {
-
-        // Verificatie mislukt -> Unauthorized
         if (err) {
             console.error("JWT Decode Error:", err);
             return res.status(401).end();
         }
 
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            // Haal de inArguments op
             var inArguments = decoded.inArguments[0];
 
             logData(req);
 
-            let startTime = inArguments.startTime; // Formaat: "HH:mm"
-            let endTime = inArguments.endTime; // Formaat: "HH:mm"
+            let startTime = inArguments.startTime; // "HH:mm"
+            let endTime = inArguments.endTime; // "HH:mm"
 
             if (!startTime || !endTime) {
                 console.error("Start- en eindtijd niet opgegeven.");
                 return res.status(400).json({ error: "Start- en eindtijd niet opgegeven." });
             }
 
-            // Huidige tijd ophalen en vergelijken
+            // Huidige tijd ophalen
             let currentTime = new Date();
-            let start = new Date(currentTime.toDateString() + ' ' + startTime);
-            let end = new Date(currentTime.toDateString() + ' ' + endTime);
+            let currentHours = currentTime.getHours();
+            let currentMinutes = currentTime.getMinutes();
 
-            console.log(`Start Time: ${start}, End Time: ${end}, Current Time: ${currentTime}`);
+            // Start- en eindtijd omzetten naar minuten voor vergelijking
+            let [startHours, startMinutes] = startTime.split(":").map(Number);
+            let [endHours, endMinutes] = endTime.split(":").map(Number);
 
-            if (currentTime >= start && currentTime <= end) {
+            let currentTotalMinutes = currentHours * 60 + currentMinutes;
+            let startTotalMinutes = startHours * 60 + startMinutes;
+            let endTotalMinutes = endHours * 60 + endMinutes;
+
+            console.log(`Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
+
+            if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
                 console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
                 res.status(200).json({ status: "success", message: "Record verwerkt binnen ingestelde tijd." });
             } else {
