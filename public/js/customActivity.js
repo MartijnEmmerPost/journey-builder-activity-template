@@ -107,13 +107,17 @@ define([
         console.log("StartTime type:", typeof startTime);
         console.log("EndTime type:", typeof endTime);
 
-        // *** Hier voegen we de tijdsvergelijking toe ***
+        // ** Tijd verwerken naar een correct formaat voor de vergelijking **
         let currentTime = new Date();
         let currentHours = currentTime.getHours();
         let currentMinutes = currentTime.getMinutes();
 
+        // Zorg ervoor dat de tijdswaarden altijd twee cijfers hebben voor de minuten
         let [startHours, startMinutes] = startTime.split(":").map(Number);
         let [endHours, endMinutes] = endTime.split(":").map(Number);
+
+        startMinutes = startMinutes < 10 ? '0' + startMinutes : startMinutes;
+        endMinutes = endMinutes < 10 ? '0' + endMinutes : endMinutes;
 
         let currentTotalMinutes = currentHours * 60 + currentMinutes;
         let startTotalMinutes = startHours * 60 + startMinutes;
