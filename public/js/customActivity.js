@@ -17,12 +17,10 @@ define([
     connection.on('requestedInteraction', onRequestedInteraction);
     connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
     connection.on('requestedDataSources', onRequestedDataSources);
-
     connection.on('clickedNext', save);
 
     // Bij renderen van de activiteit
     function onRender() {
-        // JB zal reageren wanneer 'ready' wordt aangeroepen met 'initActivity'
         connection.trigger('ready');
         connection.trigger('requestTokens');
         connection.trigger('requestEndpoints');
@@ -53,7 +51,7 @@ define([
             payload = data;
         }
 
-        // Check of 'inArguments' bestaat en haal ze op
+        // Haal inArguments op en vul de tijden in de invoervelden
         var hasInArguments = Boolean(
             payload['arguments'] &&
             payload['arguments'].execute &&
@@ -65,7 +63,7 @@ define([
 
         console.log('Has In arguments: ' + JSON.stringify(inArguments));
 
-        // Vul de tijden als ze zijn ingesteld
+        // Vul de tijden in als ze zijn ingesteld
         $.each(inArguments, function (index, inArgument) {
             $.each(inArgument, function (key, val) {
                 if (key === 'startTime') {
@@ -96,45 +94,49 @@ define([
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
-function save() {
-    // Haal de tijden op uit de invoervelden
-    var startTime = new Date($('#start-time').val());
-    var endTime = new Date($('#end-time').val());
+    // Save functie
+    function save() {
+        // Haal de tijden op uit de invoervelden (als string)
+        var startTime = $('#start-time').val(); // Tijd als string (bijv. "HH:mm")
+        var endTime = $('#end-time').val();     // Tijd als string (bijv. "HH:mm")
 
-    console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
-    console.log('End time: ' + endTime);
-    console.log("StartTime type:", typeof startTime);
-    console.log("EndTime type:", typeof endTime);
+        console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
+        console.log('End time: ' + endTime);
+        console.log("StartTime type:", typeof startTime);
+        console.log("EndTime type:", typeof endTime);
 
-    // Huidige tijd
-    var currentTime = new Date();
+        // Huidige tijd
+        var currentTime = new Date();
+        var currentHours = currentTime.getHours();
+        var currentMinutes = currentTime.getMinutes();
+        var currentTotalMinutes = currentHours * 60 + currentMinutes;
 
-    // Debug logs voor de tijden
-    console.log(`Start tijd: ${startTime}`);
-    console.log(`Eind tijd: ${endTime}`);
-    console.log(`Huidige tijd: ${currentTime}`);
+        // Start- en eindtijd omzetten naar minuten voor vergelijking
+        var [startHours, startMinutes] = startTime.split(":").map(Number);
+        var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-    // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
-    if (currentTime >= startTime && currentTime <= endTime) {
-        console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
-    } else {
-        console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
+        var startTotalMinutes = startHours * 60 + startMinutes;
+        var endTotalMinutes = endHours * 60 + endMinutes;
+
+        // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
+        if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+            console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
+        } else {
+            console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
+        }
+
+        // Sla de tijden op in de inArguments van de payload
+        payload['arguments'].execute.inArguments = [{
+            "startTime": startTime,  // Bewaar de tijd als string (bijv. "HH:mm")
+            "endTime": endTime       // Bewaar de tijd als string (bijv. "HH:mm")
+        }];
+
+        // Markeer de activiteit als geconfigureerd
+        payload['metaData'].isConfigured = true;
+
+        console.log("Payload on SAVE function: " + JSON.stringify(payload));
+
+        // Update de activiteit
+        connection.trigger('updateActivity', payload);
     }
-
-   // Sla de tijden op in de inArguments van de payload
-payload['arguments'].execute.inArguments = [{
-    "startTime": startTime,  // Bewaar de tijd als string (bijv. "HH:mm")
-    "endTime": endTime       // Bewaar de tijd als string (bijv. "HH:mm")
-}];
-
-    // Markeer de activiteit als geconfigureerd
-    payload['metaData'].isConfigured = true;
-
-    console.log("Payload on SAVE function: " + JSON.stringify(payload));
-
-    // Update de activiteit
-    connection.trigger('updateActivity', payload);
-}
-
-
 });
