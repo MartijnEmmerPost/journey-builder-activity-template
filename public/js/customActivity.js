@@ -94,44 +94,41 @@ define([
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
-  function save() {
+function save() {
     // Haal de tijden op uit de invoervelden (als string)
     var startTime = $('#start-time').val(); // Tijd als string (bijv. "HH:mm")
     var endTime = $('#end-time').val();     // Tijd als string (bijv. "HH:mm")
 
-    console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
+    console.log('Start time: ' + startTime);
     console.log('End time: ' + endTime);
-    console.log("StartTime type:", typeof startTime);
-    console.log("EndTime type:", typeof endTime);
 
-    // Huidige tijd
+    // Huidige tijd in minuten
     var currentTime = new Date();
     var currentHours = currentTime.getHours();
     var currentMinutes = currentTime.getMinutes();
     var currentTotalMinutes = currentHours * 60 + currentMinutes;
 
-    // Start- en eindtijd omzetten naar minuten voor vergelijking
+    // Start- en eindtijd omzetten naar minuten
     var [startHours, startMinutes] = startTime.split(":").map(Number);
     var [endHours, endMinutes] = endTime.split(":").map(Number);
 
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
-    // Vergelijking van de tijden (controleer of huidige tijd tussen start en eind ligt)
+    // NIEUWE LOGICA: Houd records tegen BINNEN het ingestelde tijdsbereik
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        // Tijd is binnen het ingestelde bereik, dus record wordt vastgehouden
         console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
         
-        // Hier kun je de actie triggeren om het record vast te houden
-        connection.trigger('recordHold', { message: "Record wordt vastgehouden, tijd is binnen het ingestelde bereik." });
-    } else {
-        // Tijd is buiten het ingestelde bereik, dus record wordt verwerkt
-        console.log("✅ Tijd is buiten het ingestelde bereik. Record wordt verwerkt.");
+        // Hier kan logica komen om het record vast te houden, zoals een alternatieve actie
+        connection.trigger('recordHold', { message: "Record wordt vastgehouden binnen de ingestelde tijd." });
 
-        // Sla de tijden op in de inArguments van de payload
+    } else {
+        console.log("✅ Tijd is NIET binnen het ingestelde bereik. Record mag doorgaan.");
+
+        // Opslaan van de tijden
         payload['arguments'].execute.inArguments = [{
-            "startTime": startTime,  // Bewaar de tijd als string (bijv. "HH:mm")
-            "endTime": endTime       // Bewaar de tijd als string (bijv. "HH:mm")
+            "startTime": startTime,
+            "endTime": endTime
         }];
         payload['metaData'].isConfigured = true;
 
