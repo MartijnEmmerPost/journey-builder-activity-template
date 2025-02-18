@@ -7,6 +7,7 @@ const JWT = require(Path.join(__dirname, '..', 'lib', 'jwtDecoder.js'));
 
 exports.logExecuteData = [];
 
+// Functie voor het loggen van requestdata
 function logData(req) {
     exports.logExecuteData.push({
         body: req.body,
@@ -30,12 +31,17 @@ function logData(req) {
     console.log("Received Request:", util.inspect(req.body, { depth: null }));
 }
 
+// Functie voor het controleren van het tijdformaat (HH:mm)
+function isValidTimeFormat(time) {
+    return /^\d{2}:\d{2}$/.test(time);  // Controleer of het voldoet aan "HH:mm"
+}
+
 /*
  * POST Handler for /edit/ route of Activity.
  */
 exports.edit = function (req, res) {
     logData(req);
-    res.send(200, 'Edit');
+    res.status(200).send('Edit');
 };
 
 /*
@@ -43,7 +49,7 @@ exports.edit = function (req, res) {
  */
 exports.save = function (req, res) {
     logData(req);
-    res.send(200, 'Save');
+    res.status(200).send('Save');
 };
 
 /*
@@ -59,7 +65,7 @@ exports.execute = function (req, res) {
 
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
             // 🛠️ Extra logging voor debuggen
-            console.log("✅ Received inArguments:", JSON.stringify(decoded.inArguments, null, 2));
+            console.log("✅ Ontvangen inArguments:", JSON.stringify(decoded.inArguments, null, 2));
 
             var inArguments = Object.assign({}, ...decoded.inArguments); // Fix voor arrays
 
@@ -70,9 +76,9 @@ exports.execute = function (req, res) {
             console.log(`🔹 StartTime ontvangen: ${startTime} (type: ${typeof startTime})`);
             console.log(`🔹 EndTime ontvangen: ${endTime} (type: ${typeof endTime})`);
 
-            if (!startTime || !endTime) {
-                console.error("❌ Start- en eindtijd niet opgegeven.");
-                return res.status(400).json({ error: "Start- en eindtijd niet opgegeven." });
+            if (!startTime || !endTime || !isValidTimeFormat(startTime) || !isValidTimeFormat(endTime)) {
+                console.error("❌ Start- en eindtijd niet opgegeven of ongeldig formaat.");
+                return res.status(400).json({ error: "Start- en eindtijd moeten aanwezig zijn en in het juiste formaat (HH:mm)." });
             }
 
             // Huidige tijd ophalen
@@ -90,6 +96,7 @@ exports.execute = function (req, res) {
 
             console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
 
+            // Vergelijk de tijden en bepaal of het record verwerkt of vastgehouden moet worden
             if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
                 console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
                 res.status(200).json({ status: "success", message: "Record verwerkt binnen ingestelde tijd." });
@@ -109,7 +116,7 @@ exports.execute = function (req, res) {
  */
 exports.publish = function (req, res) {
     logData(req);
-    res.send(200, 'Publish');
+    res.status(200).send('Publish');
 };
 
 /*
@@ -117,5 +124,5 @@ exports.publish = function (req, res) {
  */
 exports.validate = function (req, res) {
     logData(req);
-    res.send(200, 'Validate');
+    res.status(200).send('Validate');
 };
