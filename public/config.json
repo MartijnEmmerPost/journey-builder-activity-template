@@ -21,7 +21,7 @@
                     "endTime": "endTime"
                 }],
                  "outArguments": [{
-            "recordStatus": "recordStatus"  // Hier geef je de status van het record mee (bijv. "held" of "processed")
+            "recordStatus": "" 
         }],
           "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
            "verb": "POST",
