@@ -106,12 +106,15 @@ function save() {
     console.log("StartTime type:", typeof startTime);
     console.log("EndTime type:", typeof endTime);
 
-    // Converteer starttijd en eindtijd naar minuten
-    var startTimeParts = startTime.split(":");
-    var startTotalMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
+    // Functie om tijd om te zetten naar het aantal minuten sinds middernacht
+    function convertToMinutes(timeString) {
+        const [hours, minutes] = timeString.split(":").map(num => parseInt(num, 10));
+        return hours * 60 + minutes;  // Zet om naar minuten sinds middernacht
+    }
 
-    var endTimeParts = endTime.split(":");
-    var endTotalMinutes = parseInt(endTimeParts[0]) * 60 + parseInt(endTimeParts[1]);
+    // Converteer starttijd en eindtijd naar minuten
+    var startTotalMinutes = convertToMinutes(startTime);
+    var endTotalMinutes = convertToMinutes(endTime);
 
     // Huidige tijd in minuten
     var currentTime = new Date();
