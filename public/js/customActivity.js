@@ -94,13 +94,13 @@ define([
         console.log("Endpoints received: " + JSON.stringify(endpoints));
     }
 
-   function save() {
+function save() {
     // Haal de tijden op uit de invoervelden (als string)
-    var startTime = $('#start-time').val();
-    var endTime = $('#end-time').val();
+    var startTime = $('#start-time').val(); // Tijd als string (bijv. "HH:mm")
+    var endTime = $('#end-time').val();     // Tijd als string (bijv. "HH:mm")
 
-    console.log('Start time:', startTime);
-    console.log('End time:', endTime);
+    console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
+    console.log('End time: ' + endTime);
 
     // Huidige tijd
     var currentTime = new Date();
@@ -115,27 +115,34 @@ define([
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
-    // **Logica omgedraaid**: Records binnen het tijdsvenster worden vastgehouden
+    // Controleer of de huidige tijd binnen het bereik van de start- en eindtijd ligt
+    var recordStatus = "";
+
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+        // Als de tijd tussen de opgegeven tijden ligt, houdt het record vast
         console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
-        
-        // Simuleren dat het record wordt tegengehouden (eventueel aanpassen indien nodig)
-        connection.trigger('recordHold', { message: "Record wordt vastgehouden, tijd ligt binnen het ingestelde venster." });
+        recordStatus = "held";  // Record wordt vastgehouden
+        connection.trigger('recordHold', { message: "Record wordt vastgehouden, tijd is binnen het ingestelde bereik." });
     } else {
-        console.log("✅ Tijd is buiten het ingestelde bereik. Record mag doorgaan.");
+        // Als de tijd buiten het bereik ligt, wordt het record doorgestuurd
+        console.log("✅ Tijd is buiten het ingestelde bereik. Record wordt verwerkt.");
+        recordStatus = "processed";  // Record mag doorgaan
+    }
 
-        // Sla de tijden op en werk de activiteit bij
-        payload['arguments'].execute.inArguments = [{
-            "startTime": startTime,
-            "endTime": endTime
-        }];
-        payload['metaData'].isConfigured = true;
+    // Voeg de recordStatus toe aan outArguments
+    payload['arguments'].execute.outArguments = [{
+        "recordStatus": recordStatus
+    }];
 
-        console.log("Payload on SAVE function:", JSON.stringify(payload));
+    // Markeer de activiteit als geconfigureerd
+    payload['metaData'].isConfigured = true;
+    console.log("Payload met outArguments: " + JSON.stringify(payload));
 
-        // Update de activiteit
-        connection.trigger('updateActivity', payload);
+    // Update de activiteit, maar alleen als het record is verwerkt
+    if (recordStatus === "processed") {
+        connection.trigger('updateActivity', payload); // Update de activiteit als de tijd buiten bereik is
     }
 }
+
 
 });
