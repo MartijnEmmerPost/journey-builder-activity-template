@@ -63,15 +63,16 @@
           "fullscreen": false
         }
     },
-  "schema": {
+ "schema": {
     "arguments": {
         "execute": {
             "inArguments": [
-                { "startTime": { "dataType": "Text", "isRequired": true } },
-                { "endTime": { "dataType": "Text", "isRequired": true } }
+                { "startTime": { "dataType": "Number", "isRequired": true } },
+                { "endTime": { "dataType": "Number", "isRequired": true } }
             ],
             "outArguments": []
         }
     }
 }
+
 }
