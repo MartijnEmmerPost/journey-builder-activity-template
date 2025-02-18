@@ -72,10 +72,11 @@ exports.execute = function (req, res) {
             let startTime = inArguments.startTime; // "HH:mm"
             let endTime = inArguments.endTime; // "HH:mm"
 
-            // Log extra debug-info
-            console.log(`🔹 StartTime ontvangen: ${startTime} (type: ${typeof startTime})`);
-            console.log(`🔹 EndTime ontvangen: ${endTime} (type: ${typeof endTime})`);
+            // Extra logging om de waarden van startTime en endTime te inspecteren
+            console.log("🔹 StartTime ontvangen:", startTime);
+            console.log("🔹 EndTime ontvangen:", endTime);
 
+            // Controleer of de tijden bestaan en of ze het juiste formaat hebben
             if (!startTime || !endTime || !isValidTimeFormat(startTime) || !isValidTimeFormat(endTime)) {
                 console.error("❌ Start- en eindtijd niet opgegeven of ongeldig formaat.");
                 return res.status(400).json({ error: "Start- en eindtijd moeten aanwezig zijn en in het juiste formaat (HH:mm)." });
