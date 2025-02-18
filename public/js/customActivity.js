@@ -129,9 +129,9 @@ function save() {
         recordStatus = "processed";  // Record mag doorgaan
     }
 
-    // Voeg de recordStatus toe aan outArguments
+    // Vul de outArguments in met de status van het record
     payload['arguments'].execute.outArguments = [{
-        "recordStatus": recordStatus
+        "recordStatus": recordStatus  // Voeg de status toe aan de outArguments
     }];
 
     // Markeer de activiteit als geconfigureerd
