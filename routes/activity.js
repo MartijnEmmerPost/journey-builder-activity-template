@@ -58,15 +58,20 @@ exports.execute = function (req, res) {
         }
 
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            var inArguments = decoded.inArguments[0];
+            // 🛠️ Extra logging voor debuggen
+            console.log("✅ Received inArguments:", JSON.stringify(decoded.inArguments, null, 2));
 
-            logData(req);
+            var inArguments = Object.assign({}, ...decoded.inArguments); // Fix voor arrays
 
             let startTime = inArguments.startTime; // "HH:mm"
             let endTime = inArguments.endTime; // "HH:mm"
 
+            // Log extra debug-info
+            console.log(`🔹 StartTime ontvangen: ${startTime} (type: ${typeof startTime})`);
+            console.log(`🔹 EndTime ontvangen: ${endTime} (type: ${typeof endTime})`);
+
             if (!startTime || !endTime) {
-                console.error("Start- en eindtijd niet opgegeven.");
+                console.error("❌ Start- en eindtijd niet opgegeven.");
                 return res.status(400).json({ error: "Start- en eindtijd niet opgegeven." });
             }
 
@@ -83,7 +88,7 @@ exports.execute = function (req, res) {
             let startTotalMinutes = startHours * 60 + startMinutes;
             let endTotalMinutes = endHours * 60 + endMinutes;
 
-            console.log(`Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
+            console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
 
             if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
                 console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
@@ -93,7 +98,7 @@ exports.execute = function (req, res) {
                 res.status(200).json({ status: "held", message: "Record wordt vastgehouden tot het ingestelde tijdsvenster." });
             }
         } else {
-            console.error("inArguments ontbreekt of is ongeldig.");
+            console.error("❌ inArguments ontbreekt of is ongeldig.");
             return res.status(400).json({ error: "inArguments ontbreekt of is ongeldig." });
         }
     });
