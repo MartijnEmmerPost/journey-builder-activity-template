@@ -95,35 +95,31 @@ define([
     }
     
 function save() {
-    // Haal de tijden op uit de invoervelden (als string)
-    var startTime = $('#start-time').val(); // Tijd als string (bijv. "HH:mm")
-    var endTime = $('#end-time').val();     // Tijd als string (bijv. "HH:mm")
+    var startTime = $('#start-time').val();
+    var endTime = $('#end-time').val();
 
-    console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
+    console.log('Start time: ' + startTime);
     console.log('End time: ' + endTime);
 
-    // Huidige tijd
     var currentTime = new Date();
     var currentHours = currentTime.getHours();
     var currentMinutes = currentTime.getMinutes();
     var currentTotalMinutes = currentHours * 60 + currentMinutes;
 
-    // Start- en eindtijd omzetten naar minuten voor vergelijking
     var [startHours, startMinutes] = startTime.split(":").map(Number);
     var [endHours, endMinutes] = endTime.split(":").map(Number);
 
     var startTotalMinutes = startHours * 60 + startMinutes;
     var endTotalMinutes = endHours * 60 + endMinutes;
 
-    // Controleer of de huidige tijd tussen de start- en eindtijd ligt
     var recordStatus = "";
 
     if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
-        recordStatus = "processed"; // Record mag doorgaan
+        console.log("❌ Record wordt vastgehouden.");
+        recordStatus = "held";
     } else {
-        console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
-        recordStatus = "held"; // Record wordt vastgehouden
+        console.log("✅ Record gaat door.");
+        recordStatus = "processed";
     }
 
     // Voeg de recordStatus toe aan outArguments
@@ -131,16 +127,11 @@ function save() {
         "recordStatus": recordStatus
     }];
 
-    // Markeer de activiteit als geconfigureerd
     payload['metaData'].isConfigured = true;
     console.log("Payload met outArguments: " + JSON.stringify(payload));
 
-    // **Belangrijk:** Als de tijd niet binnen bereik is, moet de activiteit stoppen of de record vasthouden.
-    if (recordStatus === "held") {
-        connection.trigger('recordHold', { message: "Record wordt vastgehouden, tijd is buiten het ingestelde bereik." });
-    } else {
-        connection.trigger('updateActivity', payload); // Update de activiteit als de tijd binnen bereik is
-    }
+    connection.trigger('updateActivity', payload);
 }
+
 
 });
