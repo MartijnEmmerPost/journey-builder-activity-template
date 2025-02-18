@@ -102,13 +102,12 @@ function save() {
 
     console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
     console.log('End time: ' + endTime);
-    console.log("StartTime type:", typeof startTime);
-    console.log("EndTime type:", typeof endTime);
-
-    // Huidige tijd
+    
+    // Huidige tijd (in UTC)
     var currentTime = new Date();
-    var currentHours = currentTime.getHours();
-    var currentMinutes = currentTime.getMinutes();
+    var currentUTC = new Date(currentTime.toUTCString());  // Zet de huidige tijd naar UTC
+    var currentHours = currentUTC.getUTCHours();
+    var currentMinutes = currentUTC.getUTCMinutes();
     var currentTotalMinutes = currentHours * 60 + currentMinutes;
 
     // Start- en eindtijd omzetten naar minuten voor vergelijking
@@ -149,5 +148,6 @@ function save() {
     // Update de activiteit
     connection.trigger('updateActivity', payload);
 }
+
 
 });
