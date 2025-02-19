@@ -64,7 +64,7 @@ exports.execute = function (req, res) {
         }
 
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            // 🛠️ Extra logging voor debuggen
+            // 🔥 Extra logging voor debuggen
             console.log("✅ Ontvangen inArguments:", JSON.stringify(decoded.inArguments, null, 2));
 
             var inArguments = Object.assign({}, ...decoded.inArguments); // Fix voor arrays
@@ -82,10 +82,10 @@ exports.execute = function (req, res) {
                 return res.status(400).json({ error: "Start- en eindtijd moeten aanwezig zijn en in het juiste formaat (HH:mm)." });
             }
 
-            // Huidige tijd ophalen
+            // Huidige tijd ophalen in UTC
             let currentTime = new Date();
-            let currentHours = currentTime.getHours();
-            let currentMinutes = currentTime.getMinutes();
+            let currentHours = currentTime.getUTCHours();  // Gebruik UTC
+            let currentMinutes = currentTime.getUTCMinutes();  // Gebruik UTC
 
             // Start- en eindtijd omzetten naar minuten voor vergelijking
             let [startHours, startMinutes] = startTime.split(":").map(Number);
@@ -95,7 +95,7 @@ exports.execute = function (req, res) {
             let startTotalMinutes = startHours * 60 + startMinutes;
             let endTotalMinutes = endHours * 60 + endMinutes;
 
-            console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current: ${currentHours}:${currentMinutes}`);
+            console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current (UTC): ${currentHours}:${currentMinutes}`);
 
             // Vergelijk de tijden en bepaal of het record verwerkt of vastgehouden moet worden
             if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
@@ -111,6 +111,7 @@ exports.execute = function (req, res) {
         }
     });
 };
+
 
 /*
  * POST Handler for /publish/ route of Activity.
