@@ -73,7 +73,7 @@
                 { "endTime": { "dataType": "date", "isRequired": true } }
             ],
             "outArguments": [
-        { "recordStatus": { "dataType": "Text", "isNullable": false }}
+        { "recordStatus": { "dataType": "date", "isNullable": false }}
       ]
         }
     }
