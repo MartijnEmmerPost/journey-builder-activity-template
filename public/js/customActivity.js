@@ -143,6 +143,9 @@ function save() {
         "endTime": endTime       // Bewaar de tijd als string (bijv. "HH:mm")
     }];
 
+    // 🔥 Extra logging om te controleren wat er in de payload zit
+    console.log("🔹 Payload verzonden naar server:", JSON.stringify(payload, null, 2));
+
     // Markeer de activiteit als geconfigureerd
     payload['metaData'].isConfigured = true;
 
