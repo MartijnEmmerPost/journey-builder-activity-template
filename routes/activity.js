@@ -37,7 +37,7 @@ function isValidTimeFormat(time) {
 }
 
 /*
- * POST Handler for /edit/ route van Activity.
+ * POST Handler for /edit/ route of Activity.
  */
 exports.edit = function (req, res) {
     logData(req);
@@ -45,7 +45,7 @@ exports.edit = function (req, res) {
 };
 
 /*
- * POST Handler for /save/ route van Activity.
+ * POST Handler for /save/ route of Activity.
  */
 exports.save = function (req, res) {
     logData(req);
@@ -53,16 +53,15 @@ exports.save = function (req, res) {
 };
 
 /*
- * POST Handler for /execute/ route van Activity.
+ * POST Handler for /execute/ route of Activity.
  */
 exports.execute = function (req, res) {
     console.log("🚀 /execute route aangeroepen");
 
-    // Decodeer JWT
     JWT(req.body, process.env.jwtSecret, (err, decoded) => {
         if (err) {
             console.error("❌ JWT Decode Error:", err);
-            return res.status(401).end(); // Verhinderen dat een slechte JWT verder verwerkt wordt
+            return res.status(401).end();
         }
 
         console.log("🔑 JWT succesvol gedecodeerd:", JSON.stringify(decoded, null, 2));
@@ -105,21 +104,26 @@ exports.execute = function (req, res) {
             console.log("   🔹 End in minuten:", endTotalMinutes);
             console.log("   🔹 Current UTC in minuten:", currentTotalMinutes);
 
-            // Vergelijk de tijden en bepaal of het record verwerkt of vastgehouden moet worden
-           if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-    console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
-    res.status(200).json({ 
-        recordStatus: "processed",  // Verwerkt
-        message: "Record verwerkt binnen ingestelde tijd."
-    });
-} else {
-    console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
-    res.status(200).json({ 
-        recordStatus: "held",  // Vastgehouden
-        message: "Record wordt vastgehouden tot het ingestelde tijdsvenster."
-    });
-}
+            // Check of eindtijd eerder is dan starttijd (bijvoorbeeld 23:00 - 02:00)
+            if (endTotalMinutes < startTotalMinutes) {
+                // Voeg 24 uur toe aan de eindtijd om de logica over middernacht te laten werken
+                endTotalMinutes += 24 * 60;
+            }
 
+            // Vergelijk de tijden en bepaal of het record verwerkt of vastgehouden moet worden
+            if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+                console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
+                res.status(200).json({ 
+                    recordStatus: "processed",  // Record wordt verwerkt
+                    message: "Record verwerkt binnen ingestelde tijd."
+                });
+            } else {
+                console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
+                res.status(200).json({ 
+                    recordStatus: "held",  // Record wordt vastgehouden
+                    message: "Record wordt vastgehouden tot het ingestelde tijdsvenster."
+                });
+            }
         } else {
             console.error("❌ inArguments ontbreekt of is ongeldig.");
             return res.status(400).json({ error: "inArguments ontbreekt of is ongeldig." });
@@ -128,7 +132,7 @@ exports.execute = function (req, res) {
 };
 
 /*
- * POST Handler for /publish/ route van Activity.
+ * POST Handler for /publish/ route of Activity.
  */
 exports.publish = function (req, res) {
     logData(req);
@@ -136,7 +140,7 @@ exports.publish = function (req, res) {
 };
 
 /*
- * POST Handler for /validate/ route van Activity.
+ * POST Handler for /validate/ route of Activity.
  */
 exports.validate = function (req, res) {
     logData(req);
