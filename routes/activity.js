@@ -28,7 +28,7 @@ function logData(req) {
         secure: req.secure,
         originalUrl: req.originalUrl
     });
-    console.log("Received Request:", util.inspect(req.body, { depth: null }));
+    console.log("📩 Received Request:", util.inspect(req.body, { depth: null }));
 }
 
 // Functie voor het controleren van het tijdformaat (HH:mm)
@@ -54,17 +54,19 @@ exports.save = function (req, res) {
 
 /*
  * POST Handler for /execute/ route of Activity.
- * Hier controleren we of de huidige tijd binnen de ingestelde tijden ligt.
  */
 exports.execute = function (req, res) {
+    console.log("🚀 /execute route aangeroepen");
+
     JWT(req.body, process.env.jwtSecret, (err, decoded) => {
         if (err) {
-            console.error("JWT Decode Error:", err);
+            console.error("❌ JWT Decode Error:", err);
             return res.status(401).end();
         }
 
+        console.log("🔑 JWT succesvol gedecodeerd:", JSON.stringify(decoded, null, 2));
+
         if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
-            // 🔥 Extra logging voor debuggen
             console.log("✅ Ontvangen inArguments:", JSON.stringify(decoded.inArguments, null, 2));
 
             var inArguments = Object.assign({}, ...decoded.inArguments); // Fix voor arrays
@@ -72,7 +74,6 @@ exports.execute = function (req, res) {
             let startTime = inArguments.startTime; // "HH:mm"
             let endTime = inArguments.endTime; // "HH:mm"
 
-            // Extra logging om de waarden van startTime en endTime te inspecteren
             console.log("🔹 StartTime ontvangen:", startTime);
             console.log("🔹 EndTime ontvangen:", endTime);
 
@@ -95,7 +96,13 @@ exports.execute = function (req, res) {
             let startTotalMinutes = startHours * 60 + startMinutes;
             let endTotalMinutes = endHours * 60 + endMinutes;
 
-            console.log(`🕒 Vergelijking - Start: ${startHours}:${startMinutes}, End: ${endHours}:${endMinutes}, Current (UTC): ${currentHours}:${currentMinutes}`);
+            console.log("🕒 Tijd Vergelijking:");
+            console.log("   🔹 Starttijd:", startHours + ":" + startMinutes);
+            console.log("   🔹 Eindtijd:", endHours + ":" + endMinutes);
+            console.log("   🔹 Huidige UTC-tijd:", currentHours + ":" + currentMinutes);
+            console.log("   🔹 Start in minuten:", startTotalMinutes);
+            console.log("   🔹 End in minuten:", endTotalMinutes);
+            console.log("   🔹 Current UTC in minuten:", currentTotalMinutes);
 
             // Vergelijk de tijden en bepaal of het record verwerkt of vastgehouden moet worden
             if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
@@ -111,7 +118,6 @@ exports.execute = function (req, res) {
         }
     });
 };
-
 
 /*
  * POST Handler for /publish/ route of Activity.
