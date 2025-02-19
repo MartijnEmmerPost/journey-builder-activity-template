@@ -20,13 +20,13 @@
                 { "endTime": "{{Activity.TimeWindowHold.endTime}}" }
             ],
             "outArguments": [
-                { "recordStatus": "processed" }  // Gebruik een default waarde zoals 'processed'
+                { "recordStatus": "processed" }  
             ],
             "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
             "verb": "POST",
             "format": "json",
             "useJwt": true,
-            "timeout": 10000  // Controleer of 10 seconden genoeg is voor jouw use case
+            "timeout": 10000  
         }
     },
     "configurationArguments": {
