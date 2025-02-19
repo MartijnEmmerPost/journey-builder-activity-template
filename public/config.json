@@ -16,10 +16,15 @@
     },
     "arguments": {
         "execute": {
-           "inArguments":[{
-                    "startTime": "startTime",
-                    "endTime": "endTime"
-                }],
+         "inArguments": [
+    {
+      "startTime": "{{Activity.TimeWindowHold.startTime}}"
+    },
+    {
+      "endTime": "{{Activity.TimeWindowHold.endTime}}"
+    }
+  ]
+,
               "outArguments": [
     { "recordStatus": "" }
 ],
