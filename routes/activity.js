@@ -37,22 +37,6 @@ function isValidTimeFormat(time) {
 }
 
 /*
- * POST Handler for /edit/ route of Activity.
- */
-exports.edit = function (req, res) {
-    logData(req);
-    res.status(200).send('Edit');
-};
-
-/*
- * POST Handler for /save/ route of Activity.
- */
-exports.save = function (req, res) {
-    logData(req);
-    res.status(200).send('Save');
-};
-
-/*
  * POST Handler for /execute/ route of Activity.
  */
 exports.execute = function (req, res) {
@@ -131,18 +115,3 @@ exports.execute = function (req, res) {
     });
 };
 
-/*
- * POST Handler for /publish/ route of Activity.
- */
-exports.publish = function (req, res) {
-    logData(req);
-    res.status(200).send('Publish');
-};
-
-/*
- * POST Handler for /validate/ route of Activity.
- */
-exports.validate = function (req, res) {
-    logData(req);
-    res.status(200).send('Validate');
-};
