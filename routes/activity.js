@@ -106,13 +106,20 @@ exports.execute = function (req, res) {
             console.log("   🔹 Current UTC in minuten:", currentTotalMinutes);
 
             // Vergelijk de tijden en bepaal of het record verwerkt of vastgehouden moet worden
-            if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-                console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
-                res.status(200).json({ status: "success", message: "Record verwerkt binnen ingestelde tijd." });
-            } else {
-                console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
-                res.status(200).json({ status: "held", message: "Record wordt vastgehouden tot het ingestelde tijdsvenster." });
-            }
+           if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
+    console.log("✅ Tijd is binnen het ingestelde bereik. Record wordt verwerkt.");
+    res.status(200).json({ 
+        recordStatus: "processed",  // Verwerkt
+        message: "Record verwerkt binnen ingestelde tijd."
+    });
+} else {
+    console.log("❌ Tijd is NIET binnen het ingestelde bereik. Record wordt vastgehouden.");
+    res.status(200).json({ 
+        recordStatus: "held",  // Vastgehouden
+        message: "Record wordt vastgehouden tot het ingestelde tijdsvenster."
+    });
+}
+
         } else {
             console.error("❌ inArguments ontbreekt of is ongeldig.");
             return res.status(400).json({ error: "inArguments ontbreekt of is ongeldig." });
