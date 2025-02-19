@@ -65,18 +65,19 @@
           "fullscreen": false
         }
     },
- "schema": {
-    "arguments": {
-        "execute": {
-            "inArguments": [
-                { "startTime": { "dataType": "date", "isRequired": true } },
-                { "endTime": { "dataType": "date", "isRequired": true } }
-            ],
-            "outArguments": [
-        { "recordStatus": { "dataType": "date", "isNullable": false }}
+"schema": {
+  "arguments": {
+    "execute": {
+      "inArguments": [
+        { "startTime": { "dataType": "Text", "isNullable": false }},
+        { "endTime": { "dataType": "Text", "isNullable": false }}
+      ],
+      "outArguments": [
+        { "recordStatus": { "dataType": "Text", "isNullable": false }}
       ]
-        }
     }
+  }
 }
+
 
 }
