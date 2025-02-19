@@ -66,18 +66,17 @@
         }
     },
 "schema": {
-  "arguments": {
-    "execute": {
-      "inArguments": [
-        { "startTime": { "dataType": "Text", "isNullable": false }},
-        { "endTime": { "dataType": "Text", "isNullable": false }}
-      ],
-      "outArguments": [
-        { "recordStatus": { "dataType": "Text", "isNullable": false }}
-      ]
+    "arguments": {
+        "execute": {
+            "inArguments": [
+                { "startTime": { "dataType": "Text", "isNullable": false, "direction": "In" }},
+                { "endTime": { "dataType": "Text", "isNullable": false, "direction": "In" }}
+            ],
+            "outArguments": [
+                { "recordStatus": { "dataType": "Text", "isNullable": false, "direction": "Out" }}
+            ]
+        }
     }
-  }
 }
-
 
 }
