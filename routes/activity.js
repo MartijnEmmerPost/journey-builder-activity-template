@@ -37,7 +37,7 @@ function isValidTimeFormat(time) {
 }
 
 /*
- * POST Handler for /edit/ route of Activity.
+ * POST Handler for /edit/ route van Activity.
  */
 exports.edit = function (req, res) {
     logData(req);
@@ -45,7 +45,7 @@ exports.edit = function (req, res) {
 };
 
 /*
- * POST Handler for /save/ route of Activity.
+ * POST Handler for /save/ route van Activity.
  */
 exports.save = function (req, res) {
     logData(req);
@@ -53,15 +53,16 @@ exports.save = function (req, res) {
 };
 
 /*
- * POST Handler for /execute/ route of Activity.
+ * POST Handler for /execute/ route van Activity.
  */
 exports.execute = function (req, res) {
     console.log("🚀 /execute route aangeroepen");
 
+    // Decodeer JWT
     JWT(req.body, process.env.jwtSecret, (err, decoded) => {
         if (err) {
             console.error("❌ JWT Decode Error:", err);
-            return res.status(401).end();
+            return res.status(401).end(); // Verhinderen dat een slechte JWT verder verwerkt wordt
         }
 
         console.log("🔑 JWT succesvol gedecodeerd:", JSON.stringify(decoded, null, 2));
@@ -120,7 +121,7 @@ exports.execute = function (req, res) {
 };
 
 /*
- * POST Handler for /publish/ route of Activity.
+ * POST Handler for /publish/ route van Activity.
  */
 exports.publish = function (req, res) {
     logData(req);
@@ -128,7 +129,7 @@ exports.publish = function (req, res) {
 };
 
 /*
- * POST Handler for /validate/ route of Activity.
+ * POST Handler for /validate/ route van Activity.
  */
 exports.validate = function (req, res) {
     logData(req);
