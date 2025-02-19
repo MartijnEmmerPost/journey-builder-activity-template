@@ -1,6 +1,5 @@
 {
     "workflowApiVersion": "1.1",
-    
     "metaData": {
         "icon": "images/icon.png",
         "iconSmall": "images/iconSmall.png",
@@ -10,55 +9,48 @@
     "lang": {
         "en-US": {
             "name": "Hold between hours",
-          "description": "Restrict between the specified hours.",
-          "step1Label": "Configure Activity"
+            "description": "Restrict between the specified hours.",
+            "step1Label": "Configure Activity"
         }
     },
     "arguments": {
         "execute": {
-         "inArguments": [
-    {
-      "startTime": "{{Activity.TimeWindowHold.startTime}}"
-    },
-    {
-      "endTime": "{{Activity.TimeWindowHold.endTime}}"
-    }
-  ]
-,
-              "outArguments": [
-    { "recordStatus": "" }
-],
-          "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
-           "verb": "POST",
-            "body": "",
-            "header": "",
+            "inArguments": [
+                { "startTime": "{{Activity.TimeWindowHold.startTime}}" },
+                { "endTime": "{{Activity.TimeWindowHold.endTime}}" }
+            ],
+            "outArguments": [
+                { "recordStatus": "processed" }  // Gebruik een default waarde zoals 'processed'
+            ],
+            "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
+            "verb": "POST",
             "format": "json",
             "useJwt": true,
-            "timeout": 10000
+            "timeout": 10000  // Controleer of 10 seconden genoeg is voor jouw use case
         }
     },
     "configurationArguments": {
-         "applicationExtensionKey": "a15e6abe-f1b2-434b-bd82-4e5ca247ead4",
-      "save": {
-        "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/save",
-          "verb": "POST",
-        "useJwt": true
-       },
-       "publish": {
-        "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/publish",
-           "verb": "POST",
-        "useJwt": true
-       },
-      "stop": {
-        "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/stop",
-           "verb": "POST",
-        "useJwt": true
-      },
-      "validate": {
-        "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/validate",
-        "verb": "POST",
-        "useJwt": true
-      }
+        "applicationExtensionKey": "a15e6abe-f1b2-434b-bd82-4e5ca247ead4",
+        "save": {
+            "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/save",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "publish": {
+            "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/publish",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "stop": {
+            "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/stop",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "validate": {
+            "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/validate",
+            "verb": "POST",
+            "useJwt": true
+        }
     },
     "wizardSteps": [
         { "label": "Configure Activity", "key": "step1" }
@@ -67,21 +59,20 @@
         "configModal": {
             "height": 400,
             "width": 700,
-          "fullscreen": false
+            "fullscreen": false
         }
     },
-"schema": {
-    "arguments": {
-        "execute": {
-            "inArguments": [
-                { "startTime": { "dataType": "Text", "isNullable": false, "direction": "In" }},
-                { "endTime": { "dataType": "Text", "isNullable": false, "direction": "In" }}
-            ],
-            "outArguments": [
-                { "recordStatus": { "dataType": "Text", "isNullable": false, "direction": "Out" }}
-            ]
+    "schema": {
+        "arguments": {
+            "execute": {
+                "inArguments": [
+                    { "startTime": { "dataType": "Text", "isNullable": false, "direction": "In" }},
+                    { "endTime": { "dataType": "Text", "isNullable": false, "direction": "In" }}
+                ],
+                "outArguments": [
+                    { "recordStatus": { "dataType": "Text", "isNullable": false, "direction": "Out" }}
+                ]
+            }
         }
     }
-}
-
 }
