@@ -1,81 +1,40 @@
 define([
     'postmonger'
-], function (
-    Postmonger
-) {
+], function (Postmonger) {
     'use strict';
 
     var connection = new Postmonger.Session();
-    var authTokens = {};
     var payload = {};
+
     $(window).ready(onRender);
 
-    // Events voor de activiteit
     connection.on('initActivity', initialize);
-    connection.on('requestedTokens', onGetTokens);
-    connection.on('requestedEndpoints', onGetEndpoints);
-    connection.on('requestedInteraction', onRequestedInteraction);
-    connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
-    connection.on('requestedDataSources', onRequestedDataSources);
     connection.on('clickedNext', save);
 
-    // Bij renderen van de activiteit
     function onRender() {
         connection.trigger('ready');
-        connection.trigger('requestTokens');
-        connection.trigger('requestEndpoints');
-        connection.trigger('requestInteraction');
-        connection.trigger('requestTriggerEventDefinition');
-        connection.trigger('requestDataSources');
     }
 
-    function onRequestedDataSources(dataSources) {
-        console.log('*** requestedDataSources ***');
-        console.log(dataSources);
-    }
-
-    function onRequestedInteraction(interaction) {    
-        console.log('*** requestedInteraction ***');
-        console.log(interaction);
-    }
-
-    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
-        console.log('*** requestedTriggerEventDefinition ***');
-        console.log(eventDefinitionModel);
-    }
-
-    // Initialisatie van de activiteit
     function initialize(data) {
-        console.log("Initializing data: " + JSON.stringify(data));
+        console.log("🔹 Initializing activity with data:", JSON.stringify(data, null, 2));
+
         if (data) {
             payload = data;
         }
 
-        // Haal inArguments op en vul de tijden in de invoervelden
-        var hasInArguments = Boolean(
-            payload['arguments'] &&
-            payload['arguments'].execute &&
-            payload['arguments'].execute.inArguments &&
-            payload['arguments'].execute.inArguments.length > 0
-        );
+        var inArguments = payload?.arguments?.execute?.inArguments || [];
 
-        var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
+        var startTime = "00:00";
+        var endTime = "23:59";
 
-        console.log('Has In arguments: ' + JSON.stringify(inArguments));
-
-        // Vul de tijden in als ze zijn ingesteld
-        $.each(inArguments, function (index, inArgument) {
-            $.each(inArgument, function (key, val) {
-                if (key === 'startTime') {
-                    $('#start-time').val(val);
-                }
-                if (key === 'endTime') {
-                    $('#end-time').val(val);
-                }
-            });
+        inArguments.forEach(arg => {
+            if (arg.startTime) startTime = arg.startTime;
+            if (arg.endTime) endTime = arg.endTime;
         });
 
-        // Update de knop van 'Next' naar 'Done'
+        $('#start-time').val(startTime);
+        $('#end-time').val(endTime);
+
         connection.trigger('updateButton', {
             button: 'next',
             text: 'done',
@@ -83,77 +42,49 @@ define([
         });
     }
 
-    // Verkrijg de tokens (authenticatie)
-    function onGetTokens(tokens) {
-        console.log("Tokens received: " + JSON.stringify(tokens));
-        authTokens = tokens;
+    function save() {
+        var startTime = $('#start-time').val();
+        var endTime = $('#end-time').val();
+
+        console.log("🕒 Start Time:", startTime);
+        console.log("🕒 End Time:", endTime);
+
+        // Huidige UTC-tijd ophalen
+        var now = new Date();
+        var currentUTCMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+
+        // Start- en eindtijd omzetten naar UTC-minuten
+        var [startHours, startMinutes] = startTime.split(":").map(Number);
+        var [endHours, endMinutes] = endTime.split(":").map(Number);
+
+        var startTotalMinutes = startHours * 60 + startMinutes;
+        var endTotalMinutes = endHours * 60 + endMinutes;
+
+        // Als de eindtijd vóór de starttijd ligt (bijv. 23:00 - 02:00), behandel het als een overgang naar de volgende dag
+        if (endTotalMinutes < startTotalMinutes) {
+            endTotalMinutes += 24 * 60;  // Voeg een dag toe
+        }
+
+        var recordStatus = "processed"; // Standaard: direct doorlaten
+        if (currentUTCMinutes >= startTotalMinutes && currentUTCMinutes <= endTotalMinutes) {
+            recordStatus = "held"; // Houd het record vast
+        }
+
+        console.log(`🚦 Record Status: ${recordStatus}`);
+
+        payload.arguments.execute.inArguments = [
+            { "startTime": startTime },
+            { "endTime": endTime }
+        ];
+
+        payload.arguments.execute.outArguments = [
+            { "recordStatus": recordStatus }
+        ];
+
+        payload.metaData.isConfigured = true;
+
+        console.log("🔹 Updated Payload:", JSON.stringify(payload, null, 2));
+
+        connection.trigger('updateActivity', payload);
     }
-
-    // Verkrijg de endpoints
-    function onGetEndpoints(endpoints) {
-        console.log("Endpoints received: " + JSON.stringify(endpoints));
-    }
-
-// Save functie
-function save() {
-    // Haal de tijden op uit de invoervelden (als string)
-    var startTime = $('#start-time').val(); // Tijd als string (bijv. "HH:mm")
-    var endTime = $('#end-time').val();     // Tijd als string (bijv. "HH:mm")
-
-    console.log('Start time: ' + startTime);  // Debug log om te controleren of de tijden correct worden gelezen
-    console.log('End time: ' + endTime);
-
-    // Huidige tijd (in UTC)
-    var currentTime = new Date();
-    var currentUTC = new Date(currentTime.toUTCString());  // Zet de huidige tijd naar UTC
-    var currentHours = currentUTC.getUTCHours();
-    var currentMinutes = currentUTC.getUTCMinutes();
-    var currentTotalMinutes = currentHours * 60 + currentMinutes;
-
-    // Start- en eindtijd omzetten naar minuten voor vergelijking
-    var [startHours, startMinutes] = startTime.split(":").map(Number);
-    var [endHours, endMinutes] = endTime.split(":").map(Number);
-
-    var startTotalMinutes = startHours * 60 + startMinutes;
-    var endTotalMinutes = endHours * 60 + endMinutes;
-
-    // Als de eindtijd vóór de starttijd ligt (bijvoorbeeld 23:00 - 02:00), moet de eindtijd als 'de volgende dag' worden beschouwd
-    if (endTotalMinutes < startTotalMinutes) {
-        endTotalMinutes += 24 * 60;  // Voeg een dag toe aan de eindtijd
-    }
-
-    // Vergelijking van de tijden (controleer of de huidige tijd tussen start en eind ligt)
-    if (currentTotalMinutes >= startTotalMinutes && currentTotalMinutes <= endTotalMinutes) {
-        // Als de huidige tijd tussen start- en eindtijd valt, wordt het record vastgehouden
-        console.log("❌ Tijd is binnen het ingestelde bereik. Record wordt vastgehouden.");
-        payload['arguments'].execute.outArguments = [{
-            "recordStatus": "held"  // Markeer het record als 'held' (vastgehouden)
-        }];
-    } else {
-        // Als de huidige tijd buiten het ingestelde bereik valt, wordt het record verder verwerkt
-        console.log("✅ Tijd is buiten het ingestelde bereik. Record wordt verwerkt.");
-        payload['arguments'].execute.outArguments = [{
-            "recordStatus": "processed"  // Markeer het record als 'processed' (door laten gaan)
-        }];
-    }
-
-    // Sla de tijden op in de inArguments van de payload
-    payload['arguments'].execute.inArguments = [{
-        "startTime": startTime,  // Bewaar de tijd als string (bijv. "HH:mm")
-        "endTime": endTime       // Bewaar de tijd als string (bijv. "HH:mm")
-    }];
-
-    // 🔥 Extra logging om te controleren wat er in de payload zit
-    console.log("🔹 Payload verzonden naar server:", JSON.stringify(payload, null, 2));
-
-    // Markeer de activiteit als geconfigureerd
-    payload['metaData'].isConfigured = true;
-
-    console.log("Payload on SAVE function: " + JSON.stringify(payload));
-
-    // Update de activiteit
-    connection.trigger('updateActivity', payload);
-}
-
-
 });
