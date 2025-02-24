@@ -54,31 +54,27 @@ define([
         var localOffset = 1 * 60 * 60000; // Nederland is GMT +1 (1 uur in milliseconden)
         var currentTime = new Date(now.getTime() + localOffset); // Pas de tijd aan naar lokale tijd (Nederlandse tijd)
 
-        // Start- en eindtijd omzetten naar lokale tijd
+        // Start- en eindtijd omzetten naar lokale tijd (in Nederland)
         var [startHours, startMinutes] = startTime.split(":").map(Number);
         var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-        // Zet start- en eindtijd naar UTC door lokale tijd om te zetten naar UTC
-        var startTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
-        var endTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
-
-        // Zet start- en eindtijd om naar UTC (door lokale tijd - localOffset)
-        var startTimeUTC = new Date(startTimeLocal.getTime() - localOffset); // Omzetten naar UTC
-        var endTimeUTC = new Date(endTimeLocal.getTime() - localOffset); // Omzetten naar UTC
+        // Zet start- en eindtijd naar lokale tijd
+        var startTimeLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHours, startMinutes);
+        var endTimeLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endHours, endMinutes);
 
         // Log de tijden om te controleren
-        console.log(`🕒 Huidige tijd (lokale tijd): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
-        console.log(`Tijdverschil (Huidige tijd - Starttijd): ${currentTime - startTimeUTC}ms`);
-        console.log(`Tijdverschil (Eindtijd - Huidige tijd): ${endTimeUTC - currentTime}ms`);
+        console.log(`🕒 Huidige tijd (lokale tijd): ${currentTime.toISOString()}, Starttijd (lokale tijd): ${startTimeLocal.toISOString()}, Eindtijd (lokale tijd): ${endTimeLocal.toISOString()}`);
+        console.log(`Tijdverschil (Huidige tijd - Starttijd): ${currentTime - startTimeLocal}ms`);
+        console.log(`Tijdverschil (Eindtijd - Huidige tijd): ${endTimeLocal - currentTime}ms`);
 
         // Als de eindtijd vóór de starttijd ligt (bijv. 23:00 - 02:00), behandel het als een overgang naar de volgende dag
-        if (endTimeUTC < startTimeUTC) {
-            endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Voeg een dag toe voor de overgang naar de volgende dag
+        if (endTimeLocal < startTimeLocal) {
+            endTimeLocal.setDate(endTimeLocal.getDate() + 1);  // Voeg een dag toe voor de overgang naar de volgende dag
         }
 
         // Bepaal de status van het record
         var recordStatus = "processed"; // Standaard: direct doorlaten
-        if (currentTime >= startTimeUTC && currentTime <= endTimeUTC) {
+        if (currentTime >= startTimeLocal && currentTime <= endTimeLocal) {
             recordStatus = "held"; // Houd het record vast
         }
 
