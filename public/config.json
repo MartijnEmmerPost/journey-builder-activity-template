@@ -20,7 +20,7 @@
                 { "endTime": "{{Activity.TimeWindowHold.endTime}}" }
             ],
             "outArguments": [
-                { "recordStatus": "processed" }  
+                { "recordStatus": "" }  
             ],
             "url": "https://test-activity-e27a8f69e823.herokuapp.com/journeybuilder/execute",
             "verb": "POST",
