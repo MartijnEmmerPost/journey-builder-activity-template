@@ -51,27 +51,25 @@ define([
 
         // Huidige UTC-tijd ophalen
         var now = new Date();
-        var currentUTCMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+        var currentTime = new Date(`1970-01-01T${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:00Z`);
 
-        // Start- en eindtijd omzetten naar UTC-minuten
-        var [startHours, startMinutes] = startTime.split(":").map(Number);
-        var [endHours, endMinutes] = endTime.split(":").map(Number);
+        // Start- en eindtijd naar Date-objecten converteren
+        var startTimeUTC = new Date(`1970-01-01T${startTime}:00Z`);
+        var endTimeUTC = new Date(`1970-01-01T${endTime}:00Z`);
 
-        var startTotalMinutes = startHours * 60 + startMinutes;
-        var endTotalMinutes = endHours * 60 + endMinutes;
-
-        // Als de eindtijd vóór de starttijd ligt (bijv. 23:00 - 02:00), behandel het als een overgang naar de volgende dag
-        if (endTotalMinutes < startTotalMinutes) {
-            endTotalMinutes += 24 * 60;  // Voeg een dag toe
+        // Controleer of eindtijd vóór starttijd ligt (overgang naar volgende dag)
+        if (endTimeUTC < startTimeUTC) {
+            endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Eindtijd naar de volgende dag verschuiven
         }
 
-        var recordStatus = "processed"; // Standaard: direct doorlaten
-        if (currentUTCMinutes >= startTotalMinutes && currentUTCMinutes <= endTotalMinutes) {
-            recordStatus = "held"; // Houd het record vast
-        }
+        console.log(`🕒 Huidige tijd: ${currentTime.toISOString()}, Starttijd: ${startTimeUTC.toISOString()}, Eindtijd: ${endTimeUTC.toISOString()}`);
+
+        // Recordstatus bepalen
+        var recordStatus = (currentTime >= startTimeUTC && currentTime <= endTimeUTC) ? "held" : "processed";
 
         console.log(`🚦 Record Status: ${recordStatus}`);
 
+        // Payload bijwerken
         payload.arguments.execute.inArguments = [
             { "startTime": startTime },
             { "endTime": endTime }
