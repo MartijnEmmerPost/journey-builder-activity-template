@@ -26,7 +26,7 @@
             "verb": "POST",
             "format": "json",
             "useJwt": true,
-            "timeout": 10000  
+            "timeout": 10000
         }
     },
     "configurationArguments": {
@@ -66,8 +66,8 @@
         "arguments": {
             "execute": {
                 "inArguments": [
-                    { "startTime": { "dataType": "Text", "isNullable": false, "direction": "In" }},
-                    { "endTime": { "dataType": "Text", "isNullable": false, "direction": "In" }}
+                    { "startTime": { "dataType": "Date", "isNullable": false, "direction": "In" }},
+                    { "endTime": { "dataType": "Date", "isNullable": false, "direction": "In" }}
                 ],
                 "outArguments": [
                     { "recordStatus": { "dataType": "Text", "isNullable": false, "direction": "Out" }}
