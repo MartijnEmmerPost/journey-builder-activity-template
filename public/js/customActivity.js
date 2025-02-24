@@ -57,7 +57,7 @@ define([
         var timezoneOffset = 60 * 60000; // Nederland is UTC +1 uur in de winter (60 minuten in milliseconden)
         currentTime.setTime(currentTime.getTime() + timezoneOffset); // Corrigeer huidige tijd naar lokale tijd
 
-        // Start- en eindtijd omzetten naar lokale tijd
+        // Start- en eindtijd omzetten naar UTC
         var [startHours, startMinutes] = startTime.split(":").map(Number);
         var [endHours, endMinutes] = endTime.split(":").map(Number);
 
