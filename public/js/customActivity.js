@@ -65,7 +65,11 @@ define([
         console.log(`🕒 Huidige tijd: ${currentTime.toISOString()}, Starttijd: ${startTimeUTC.toISOString()}, Eindtijd: ${endTimeUTC.toISOString()}`);
 
         // Recordstatus bepalen
-        var recordStatus = (currentTime >= startTimeUTC && currentTime <= endTimeUTC) ? "held" : "processed";
+        var recordStatus = "processed"; // Standaard: direct doorlaten
+
+        if (currentTime >= startTimeUTC && currentTime <= endTimeUTC) {
+            recordStatus = "held"; // Houd het record vast
+        }
 
         console.log(`🚦 Record Status: ${recordStatus}`);
 
