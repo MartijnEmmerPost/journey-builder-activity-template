@@ -60,11 +60,11 @@ define([
         var [startHours, startMinutes] = startTime.split(":").map(Number);
         var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-        // Zet start- en eindtijd naar UTC door lokale tijd om te zetten naar UTC
+        // Zet start- en eindtijd naar lokale tijd, voor het geval we de tijdzone willen aanpassen.
         var startTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
         var endTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
 
-        // Nu correct omzetten naar UTC door lokale tijd om te zetten naar UTC
+        // Start- en eindtijd omzetten naar UTC door lokale tijd om te zetten naar UTC
         var startTimeUTC = new Date(startTimeLocal.getTime() - localOffset); // Starttijd omgezet naar UTC
         var endTimeUTC = new Date(endTimeLocal.getTime() - localOffset); // Eindtijd omgezet naar UTC
 
