@@ -61,8 +61,11 @@ define([
         if (endTimeUTC < startTimeUTC) {
             endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Eindtijd naar de volgende dag verschuiven
         }
+        
+       console.log(`🕒 Huidige tijd (UTC): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
+console.log(`Tijdverschil (Huidige tijd - Starttijd): ${currentTime - startTimeUTC}ms`);
+console.log(`Tijdverschil (Eindtijd - Huidige tijd): ${endTimeUTC - currentTime}ms`);
 
-        console.log(`🕒 Huidige tijd: ${currentTime.toISOString()}, Starttijd: ${startTimeUTC.toISOString()}, Eindtijd: ${endTimeUTC.toISOString()}`);
 
         // Recordstatus bepalen
         var recordStatus = "processed"; // Standaard: direct doorlaten
