@@ -49,24 +49,22 @@ define([
         console.log("🕒 Start Time:", startTime);
         console.log("🕒 End Time:", endTime);
 
-        // Huidige tijd ophalen
+        // Huidige tijd ophalen in lokale tijd (Nederlandse tijd - GMT+1)
         var now = new Date();
-        
-        // De tijd correct instellen voor Nederland (GMT+1)
         var localOffset = 1 * 60 * 60000; // Nederland is GMT +1 (1 uur in milliseconden)
-        var currentTime = new Date(now.getTime() + localOffset); // Correct de huidige tijd naar Nederlandse tijd (GMT+1)
+        var currentTime = new Date(now.getTime() + localOffset); // Pas de tijd aan naar lokale tijd (Nederlandse tijd)
 
-        // Start- en eindtijd omzetten naar lokale tijd en daarna naar UTC
+        // Start- en eindtijd omzetten naar lokale tijd
         var [startHours, startMinutes] = startTime.split(":").map(Number);
         var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-        // Zet start- en eindtijd naar lokale tijd, voor het geval we de tijdzone willen aanpassen.
+        // Zet start- en eindtijd naar UTC door lokale tijd om te zetten naar UTC
         var startTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
         var endTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
 
-        // Start- en eindtijd omzetten naar UTC door lokale tijd om te zetten naar UTC
-        var startTimeUTC = new Date(startTimeLocal.getTime() - localOffset); // Starttijd omgezet naar UTC
-        var endTimeUTC = new Date(endTimeLocal.getTime() - localOffset); // Eindtijd omgezet naar UTC
+        // Zet start- en eindtijd om naar UTC (door lokale tijd - localOffset)
+        var startTimeUTC = new Date(startTimeLocal.getTime() - localOffset); // Omzetten naar UTC
+        var endTimeUTC = new Date(endTimeLocal.getTime() - localOffset); // Omzetten naar UTC
 
         // Log de tijden om te controleren
         console.log(`🕒 Huidige tijd (lokale tijd): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
@@ -75,7 +73,7 @@ define([
 
         // Als de eindtijd vóór de starttijd ligt (bijv. 23:00 - 02:00), behandel het als een overgang naar de volgende dag
         if (endTimeUTC < startTimeUTC) {
-            endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Voeg een dag toe
+            endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Voeg een dag toe voor de overgang naar de volgende dag
         }
 
         // Bepaal de status van het record
