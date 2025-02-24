@@ -51,32 +51,32 @@ define([
 
         // Huidige UTC-tijd ophalen
         var now = new Date();
-        var currentTime = new Date(`1970-01-01T${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:00Z`);
+        var currentTime = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes());
 
-        // Start- en eindtijd naar Date-objecten converteren
-        var startTimeUTC = new Date(`1970-01-01T${startTime}:00Z`);
-        var endTimeUTC = new Date(`1970-01-01T${endTime}:00Z`);
+        // Start- en eindtijd omzetten naar Date objecten
+        var [startHours, startMinutes] = startTime.split(":").map(Number);
+        var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-        // Controleer of eindtijd vóór starttijd ligt (overgang naar volgende dag)
+        var startTimeUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
+        var endTimeUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
+
+        // Log de tijden om te controleren
+        console.log(`🕒 Huidige tijd (UTC): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
+        console.log(`Tijdverschil (Huidige tijd - Starttijd): ${currentTime - startTimeUTC}ms`);
+        console.log(`Tijdverschil (Eindtijd - Huidige tijd): ${endTimeUTC - currentTime}ms`);
+
+        // Als de eindtijd vóór de starttijd ligt (bijv. 23:00 - 02:00), behandel het als een overgang naar de volgende dag
         if (endTimeUTC < startTimeUTC) {
-            endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Eindtijd naar de volgende dag verschuiven
+            endTimeUTC.setDate(endTimeUTC.getDate() + 1);  // Voeg een dag toe
         }
-        
-       console.log(`🕒 Huidige tijd (UTC): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
-console.log(`Tijdverschil (Huidige tijd - Starttijd): ${currentTime - startTimeUTC}ms`);
-console.log(`Tijdverschil (Eindtijd - Huidige tijd): ${endTimeUTC - currentTime}ms`);
 
-
-        // Recordstatus bepalen
         var recordStatus = "processed"; // Standaard: direct doorlaten
-
         if (currentTime >= startTimeUTC && currentTime <= endTimeUTC) {
             recordStatus = "held"; // Houd het record vast
         }
 
         console.log(`🚦 Record Status: ${recordStatus}`);
 
-        // Payload bijwerken
         payload.arguments.execute.inArguments = [
             { "startTime": startTime },
             { "endTime": endTime }
