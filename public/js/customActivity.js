@@ -49,25 +49,27 @@ define([
         console.log("🕒 Start Time:", startTime);
         console.log("🕒 End Time:", endTime);
 
-        // Huidige UTC-tijd ophalen
+        // Huidige tijd ophalen en corrigeren naar lokale tijd (Nederlandse tijd)
         var now = new Date();
         var currentTime = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes());
+
+        // Nederlandse tijdzonecorrectie (1 uur verschil met UTC in de winter)
+        var timezoneOffset = 60 * 60000; // Nederland is UTC +1 uur in de winter (60 minuten in milliseconden)
+        currentTime.setTime(currentTime.getTime() + timezoneOffset); // Corrigeer huidige tijd naar lokale tijd
 
         // Start- en eindtijd omzetten naar lokale tijd
         var [startHours, startMinutes] = startTime.split(":").map(Number);
         var [endHours, endMinutes] = endTime.split(":").map(Number);
 
         // Zet start- en eindtijd naar UTC door lokale tijd om te zetten naar UTC
-        var localTimeOffset = now.getTimezoneOffset() * 60000;  // offset in milliseconden
-
         var startTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
         var endTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
 
-        var startTimeUTC = new Date(startTimeLocal.getTime() - localTimeOffset); // Omzetten naar UTC
-        var endTimeUTC = new Date(endTimeLocal.getTime() - localTimeOffset); // Omzetten naar UTC
+        var startTimeUTC = new Date(startTimeLocal.getTime() - timezoneOffset); // Omzetten naar UTC
+        var endTimeUTC = new Date(endTimeLocal.getTime() - timezoneOffset); // Omzetten naar UTC
 
         // Log de tijden om te controleren
-        console.log(`🕒 Huidige tijd (UTC): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
+        console.log(`🕒 Huidige tijd (lokale tijd): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
         console.log(`Tijdverschil (Huidige tijd - Starttijd): ${currentTime - startTimeUTC}ms`);
         console.log(`Tijdverschil (Eindtijd - Huidige tijd): ${endTimeUTC - currentTime}ms`);
 
