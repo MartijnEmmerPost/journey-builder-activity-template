@@ -53,12 +53,18 @@ define([
         var now = new Date();
         var currentTime = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes());
 
-        // Start- en eindtijd omzetten naar Date objecten
+        // Start- en eindtijd omzetten naar lokale tijd
         var [startHours, startMinutes] = startTime.split(":").map(Number);
         var [endHours, endMinutes] = endTime.split(":").map(Number);
 
-        var startTimeUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
-        var endTimeUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
+        // Zet start- en eindtijd naar UTC door lokale tijd om te zetten naar UTC
+        var localTimeOffset = now.getTimezoneOffset() * 60000;  // offset in milliseconden
+
+        var startTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), startHours, startMinutes);
+        var endTimeLocal = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), endHours, endMinutes);
+
+        var startTimeUTC = new Date(startTimeLocal.getTime() - localTimeOffset); // Omzetten naar UTC
+        var endTimeUTC = new Date(endTimeLocal.getTime() - localTimeOffset); // Omzetten naar UTC
 
         // Log de tijden om te controleren
         console.log(`🕒 Huidige tijd (UTC): ${currentTime.toISOString()}, Starttijd (UTC): ${startTimeUTC.toISOString()}, Eindtijd (UTC): ${endTimeUTC.toISOString()}`);
